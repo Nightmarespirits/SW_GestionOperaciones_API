@@ -17,8 +17,9 @@ connectDB()
 //Middlewares
 app.use(express.json())
 
+const ORIGIN_SITE = process.env.CORS_ALLOW_ACCESS
 const corsOptions = {
-    origin: 'http://localhost:5173', 
+    origin: ORIGIN_SITE, 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],  
     allowedHeaders: ['Content-Type', 'Authorization'],  
 };
@@ -42,4 +43,4 @@ app.use((err, req, res, next) => {
 })
 
 const PORT = process.env.PORT || 2000;
-app.listen(PORT, () => { console.log(`Servidor corriendo en http://localhost:${PORT}`) })
+app.listen(PORT, () => { console.log(`Servidor corriendo en  el puerto ${PORT}`) })
