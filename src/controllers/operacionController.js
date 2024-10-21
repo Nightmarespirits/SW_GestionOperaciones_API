@@ -10,52 +10,72 @@ export const getAllOperaciones = async (req, res) => {
     }
 }
 
-//Para insertar o actualizar proceso automaticamente
-export const createOrUpdateOperacion = async (procesoData) => {
+//Para insertar o actualizar proceso no secuencial (sin seguimiento)
+export const createUnsequentialOperacion = async (procesoData) => {
+    if (!procesoData.tipo) {
+        throw new Error('El campo "tipo" es obligatorio.');
+    }
 
-    const stages = ['lavado', 'secado', 'planchado', 'cc', 'doblado']
-        let operacion
+    const proceso = new ProcesoModel(procesoData);
 
-        // Buscar la operación más reciente que no esté finalizada
-        operacion = await OperacionModel.findOne({ 
+    const esUltimoProceso = procesoData.tipo === 'doblado';
+    const operacion = new OperacionModel({
+        procesos: [proceso._id],
+        currentStage: esUltimoProceso ? 'finalizado' : procesoData.tipo,
+        estadoOperacion: esUltimoProceso
+    });
+
+    proceso.operacion = operacion._id;
+
+    try {
+        await Promise.all([proceso.save(), operacion.save()]);
+    } catch (error) {
+        throw new Error('Error al guardar la operación y el proceso: ' + error.message);
+    }
+
+    return { operacion, proceso };
+};
+
+//Para insertar o actualizar proceso secuencial (seguimiento de stages)
+export const createSequentialOperacion = async (procesoData) => {
+    const stages = ['lavado', 'secado', 'planchado', 'cc', 'doblado'];
+
+    let operacion;
+
+    if (procesoData.tipo === 'lavado') {
+        operacion = new OperacionModel({ currentStage: 'lavado' });
+    } else {
+        const precesorStage = obtenerStage(stages, procesoData.tipo, -1);
+
+        operacion = await OperacionModel.findOne({
             estadoOperacion: false,
-            currentStage: { $ne: 'finalizado' }
-        }).sort({ createdAt: 1 })
+            currentStage: precesorStage
+        }).sort({ createdAt: 1 });
 
         if (!operacion) {
-            // Si no hay operación en curso, crear una nueva solo si es un proceso de lavado
-            if (procesoData.tipo !== 'lavado') {
-                throw new Error('Debe iniciar una nueva operación con un proceso de lavado')
-            }
-            operacion = new OperacionModel({ currentStage: 'lavado' })
-        } else {
-            // Verificar que el nuevo proceso sea el siguiente en la secuencia
-            const currentStageIndex = stages.indexOf(operacion.currentStage)
-            if (stages.indexOf(procesoData.tipo) !== currentStageIndex + 1) {
-                throw new Error(`Proceso inválido. Se espera ${stages[currentStageIndex + 1]}, pero se recibió ${procesoData.tipo}`)
-            }
+            throw new Error(`No se encontró una operación con el predecesor "${precesorStage}"`);
         }
+    }
 
-        // Crear el nuevo proceso
-        const proceso = new ProcesoModel(procesoData)
-        await proceso.save()
+    const proceso = new ProcesoModel(procesoData);
 
-        // Añadir el proceso a la operación
-        operacion.procesos.push(proceso._id)
+    operacion.procesos.push(proceso._id);
 
-        // Actualizar la etapa actual
-        operacion.currentStage = procesoData.tipo
+    proceso.operacion = operacion._id;
 
-        // Si es el último proceso (doblado), finalizar la operación
-        if (procesoData.tipo === 'doblado') {
-            operacion.currentStage = 'finalizado'
-            operacion.estadoOperacion = true
-        }
+    await Promise.all([proceso.save(), operacion.save()]);
 
-        await operacion.save()
+    return { operacion, proceso};
+};
 
-        return { operacion, proceso }
-}
+// Función de utilidad para obtener stages
+const obtenerStage = (stages, tipo, desplazamiento) => {
+    const index = stages.indexOf(tipo) + desplazamiento;
+    if (index < 0 || index >= stages.length) {
+        throw new Error(`El tipo de proceso "${tipo}" es inválido o no tiene stage válido.`);
+    }
+    return stages[index];
+};
 
 //Crud
 export const createOperacion = async (req, res) => {

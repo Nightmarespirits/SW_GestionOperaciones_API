@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-router.get('/', planMiddleware(['pro']), getAllCompanies)
+router.get('/', planMiddleware(['pro', 'basic']), getAllCompanies)
 router.get('/:id', planMiddleware(['pro', 'basic']), getCompanyById);
 router.put('/:id', planMiddleware(['pro']), updateCompany);
 router.delete('/:id', planMiddleware(['pro']), deleteCompany);

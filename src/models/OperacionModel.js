@@ -23,6 +23,8 @@ const operacionSchema = new mongoose.Schema({
 })
 
 operacionSchema.pre('save', async function(next) {
+    this.estadoOperacion = false
+    
     let date = new Date()
     if (!this.fecInicio) {
         this.fecInicio = date.toLocaleDateString()
@@ -31,6 +33,7 @@ operacionSchema.pre('save', async function(next) {
         this.fecFinal = date.toLocaleDateString()
         this.estadoOperacion = true
     }
+    
     next()
 })
 export default mongoose.model('OperacionModel' , operacionSchema)

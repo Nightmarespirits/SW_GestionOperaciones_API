@@ -2,13 +2,26 @@ import MaquinaModel from "../models/MaquinaModel.js";
 
 export const getAllEMaquinas = async (req, res) => {
     try {
-        const maquina = await MaquinaModel.find()
+        const maquina = await MaquinaModel.find().populate('sede', 'nombre')
         res.json(maquina)
     } catch (error) {
         res.status(500).json({message: error.message})
     }
 }
-
+export const getMaquinasBySedeYTipo = async (req, res) => {
+    try {
+        const { sede, tipo } = req.query;
+        const maquinas = await MaquinaModel.find({ sede, tipo });
+        
+        if (maquinas.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron máquinas' });
+        }
+        
+        return res.json(maquinas);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
 //Crud
 export const createMaquina = async (req, res) => {
     try {

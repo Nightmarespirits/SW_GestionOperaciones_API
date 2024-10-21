@@ -21,8 +21,10 @@ const maquinaSchema = new mongoose.Schema({
         type: String
     },
     sede:{
+        
         type: Types.ObjectId,
-        ref: 'SedeModel'
+        ref: 'SedeModel',
+        required: true
     }
 })
 
