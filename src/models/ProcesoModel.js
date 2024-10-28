@@ -47,10 +47,13 @@ const procesoSchema = new mongoose.Schema({
         ref: 'OperacionModel'    
     },
     detalles:[ detallesSchema],
-    estado:{type: Boolean}
+    estado:{type: Boolean},
+    isSequential: { type: Boolean}
+},{
+    timestamps: true //Para agregar propiedades createdAt y updatedAt Automaticamente
 })
 
-const stages =['lavado', 'secado', 'planchado', 'cc', 'doblado', 'finalizado'];
+const stages =['lavado', 'secado', 'doblado'];
 
 const getNextStage = (currentStage) => {
     const currentIndex = stages.indexOf(currentStage);
@@ -61,11 +64,11 @@ procesoSchema.pre('save', async function(next) {
     const date = new Date();
     this.fecha = date.toLocaleDateString();
     this.hora = date.toLocaleTimeString();
-
-    if (this.isModified('estado') && this.estado === true) {
+    
+    if (this.isModified('estado') && this.estado === true && this.isSequential === true) {
         const nextStage = getNextStage(this.tipo);
-        
         if (nextStage) {
+            //Si tiene un siguiente secuencia crear sucesor
             try {
                 const successorProcess = new this.constructor({
                     tipo: nextStage,
@@ -78,19 +81,18 @@ procesoSchema.pre('save', async function(next) {
                     }))
                 });
 
-                const op = await OperacionModel.findById(this.operacion)
-                op.procesos.push(successorProcess)
+                const operacion = await OperacionModel.findById(this.operacion)
+                operacion.procesos.push(successorProcess._id)
+                await Promise.all([successorProcess.save(), operacion.save()]);
 
-                console.log(successorProcess)
-                await successorProcess.save();
             } catch (error) {
                 console.error('Error creating successor process:', error);
                 return next(error);
             }
         } else {
-            // Si es el último stage, actualiza el estado de la operación
+            // Si es el último stage, actualiza el estado de la operación a Finalizado
             try {
-                await OperacionModel.findByIdAndUpdate(this.operacion, { estado: true });
+                await OperacionModel.findByIdAndUpdate(this.operacion, { estadoOperacion: true });
             } catch (error) {
                 console.error('Error updating operation status:', error);
                 return next(error);

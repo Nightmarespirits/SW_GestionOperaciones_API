@@ -12,7 +12,7 @@ const operacionSchema = new mongoose.Schema({
     },
     currentStage:{
         type: String,
-        enum: ['lavado', 'secado', 'planchado', 'cc', 'doblado', 'finalizado']
+        enum: ['lavado', 'secado', 'doblado', 'planchado', 'cc','finalizado']
     },
     procesos: [{ 
         type: Types.ObjectId, 

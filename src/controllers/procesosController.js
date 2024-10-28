@@ -8,6 +8,7 @@ export const getAllProcesos = async (req, res) => {
         .populate('sede', 'nombre')
         .populate('responsable', 'nombres apellidos')
         .populate('detalles.maquina', 'nombre marca')
+        .sort({ createdAt: -1 });
 
         res.json(procesos)
     } catch (error) {
@@ -32,6 +33,25 @@ export const getProcesosByTipo = async(req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+
+export const getProcesosByEstado = async(req, res) => {
+    try {
+        const {estado} = req.query;
+        const procesos = await ProcesoModel.find({estado})
+        .populate('sede', 'nombre')
+        .populate('responsable', 'nombres apellidos')
+        .populate('detalles.maquina', 'nombre marca');
+
+        if (procesos.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron Procesos del estado'});
+        }
+        
+        return res.json(procesos);
+    } catch (error) {
+
+        return res.status(500).json({ message: error.message });
+    }
+}
 //Crud
 export const createSequenceProceso = async (req, res) => {
     try {
@@ -40,7 +60,8 @@ export const createSequenceProceso = async (req, res) => {
             sede,
             responsable,
             detalles,
-            estado
+            estado,
+            isSequential
         } = req.body
 
         const {operacion, proceso} = await createSequentialOperacion({
@@ -48,9 +69,10 @@ export const createSequenceProceso = async (req, res) => {
             sede,
             responsable,
             detalles,
-            estado
+            estado,
+            isSequential
         })
-        res.status(201).json({message:'Proceso Agregado exitosamente (rastreo)', operacion, proceso })  
+        res.status(201).json({message:'Proceso con seguimiento secuencial Agregado exitosamente', operacion, proceso })  
     } catch (error) {
         res.status(500).json({message: error.message})
     }
@@ -110,7 +132,8 @@ export const updateProceso= async (req, res) => {
             sede, 
             responsable,
             detalles,
-            estado
+            estado,
+            isSequential
         } = req.body
 
         const proceso = await ProcesoModel.findById(req.params.id);
@@ -124,7 +147,7 @@ export const updateProceso= async (req, res) => {
         proceso.responsable = responsable;
         proceso.detalles = detalles;
         proceso.estado = estado
-        
+        proceso.isSequential = isSequential
     try {
         const updatedProceso =  await proceso.save();
 

@@ -4,6 +4,11 @@ import ProcesoModel from "../models/ProcesoModel.js";
 export const getAllOperaciones = async (req, res) => {
     try {
         const operacion = await OperacionModel.find()
+        .populate({
+            path: 'procesos',
+            select: 'tipo fecha hora sede responsable estado detalles'
+        })
+
         res.json(operacion)
     } catch (error) {
         res.status(500).json({message: error.message})
@@ -18,11 +23,12 @@ export const createUnsequentialOperacion = async (procesoData) => {
 
     const proceso = new ProcesoModel(procesoData);
 
-    const esUltimoProceso = procesoData.tipo === 'doblado';
+    const estadoProceso = procesoData.estado;
+    
+    //Creamos operacion finalizamos si el proceso ya finalizo
     const operacion = new OperacionModel({
         procesos: [proceso._id],
-        currentStage: esUltimoProceso ? 'finalizado' : procesoData.tipo,
-        estadoOperacion: esUltimoProceso
+        estadoOperacion: estadoProceso
     });
 
     proceso.operacion = operacion._id;
@@ -38,7 +44,7 @@ export const createUnsequentialOperacion = async (procesoData) => {
 
 //Para insertar o actualizar proceso secuencial (seguimiento de stages)
 export const createSequentialOperacion = async (procesoData) => {
-    const stages = ['lavado', 'secado', 'planchado', 'cc', 'doblado'];
+    const stages =['lavado', 'secado', 'doblado'];
 
     let operacion;
 
@@ -59,8 +65,9 @@ export const createSequentialOperacion = async (procesoData) => {
 
     const proceso = new ProcesoModel(procesoData);
 
+    operacion.currentStage = obtenerStage(stages, procesoData.tipo, +1)
     operacion.procesos.push(proceso._id);
-
+    
     proceso.operacion = operacion._id;
 
     await Promise.all([proceso.save(), operacion.save()]);
