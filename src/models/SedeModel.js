@@ -21,6 +21,8 @@ const sedeSchema = new mongoose.Schema({
         type: Types.ObjectId, 
         ref: 'MaquinaModel'     
     }]
+},{
+    timestamps: true //Para agregar propiedades createdAt y updatedAt Automaticamente
 })
 
 export default mongoose.model('SedeModel', sedeSchema)

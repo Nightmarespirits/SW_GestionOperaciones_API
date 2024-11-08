@@ -3,17 +3,56 @@ import ProcesoModel from "../models/ProcesoModel.js";
 
 export const getAllOperaciones = async (req, res) => {
     try {
-        const operacion = await OperacionModel.find()
+        const operaciones = await OperacionModel.find()
         .populate({
             path: 'procesos',
-            select: 'tipo fecha hora sede responsable estado detalles'
+            populate: [
+                { 
+                    path: 'responsable',
+                    select: 'nombres apellidos'
+                },
+                {
+                    path: 'sede',
+                    select: 'nombre'
+                }
+            ]
         })
+        .sort({ createdAt: -1 });
 
-        res.json(operacion)
+        res.json(operaciones)
     } catch (error) {
         res.status(500).json({message: error.message})
     }
 }
+
+export const getOperacionesByEstado = async (req, res) => {
+    try {
+        const { estado } = req.params; 
+        
+        // Convertir el string 'true'/'false' a booleano
+        const estadoBoolean = estado === 'true';
+
+        const operaciones = await OperacionModel.find({ estadoOperacion: estadoBoolean })
+            .populate({
+                path: 'procesos',
+                populate: [
+                    { 
+                        path: 'responsable',
+                        select: 'nombres apellidos'
+                    },
+                    {
+                        path: 'sede',
+                        select: 'nombre'
+                    }
+                ]
+            })
+            .sort({ createdAt: -1 });
+
+        res.json(operaciones);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 //Para insertar o actualizar proceso no secuencial (sin seguimiento)
 export const createUnsequentialOperacion = async (procesoData) => {

@@ -57,7 +57,7 @@ const stages =['lavado', 'secado', 'doblado'];
 
 const getNextStage = (currentStage) => {
     const currentIndex = stages.indexOf(currentStage);
-    return currentIndex < stages.length - 1 ? stages[currentIndex + 1] : null;
+    return currentIndex < stages.length - 1 ? stages[currentIndex + 1] : 0;
 };
 
 procesoSchema.pre('save', async function(next) {
@@ -68,7 +68,7 @@ procesoSchema.pre('save', async function(next) {
     if (this.isModified('estado') && this.estado === true && this.isSequential === true) {
         const nextStage = getNextStage(this.tipo);
         if (nextStage) {
-            //Si tiene un siguiente secuencia crear sucesor
+            // Si tiene un siguiente en la secuencia, crear sucesor
             try {
                 const successorProcess = new this.constructor({
                     tipo: nextStage,
@@ -77,12 +77,19 @@ procesoSchema.pre('save', async function(next) {
                     detalles: this.detalles.map(detalle => ({
                         numOrden: detalle.numOrden,
                         cantidad: detalle.cantidad,
-                        obs: detalle.obs
+                        obs: detalle.obs,
+                        colorMarcado: detalle.colorMarcado
                     }))
                 });
 
-                const operacion = await OperacionModel.findById(this.operacion)
-                operacion.procesos.push(successorProcess._id)
+                // Intentar encontrar la operación
+                const operacion = await OperacionModel.findById(this.operacion);
+                
+                if (!operacion) {
+                    throw new Error(`Operation with ID ${this.operacion} not found`);
+                }
+
+                operacion.procesos.push(successorProcess._id);
                 await Promise.all([successorProcess.save(), operacion.save()]);
 
             } catch (error) {
@@ -90,7 +97,7 @@ procesoSchema.pre('save', async function(next) {
                 return next(error);
             }
         } else {
-            // Si es el último stage, actualiza el estado de la operación a Finalizado
+            // Si es el último stage, actualizar el estado de la operación a Finalizado
             try {
                 await OperacionModel.findByIdAndUpdate(this.operacion, { estadoOperacion: true });
             } catch (error) {

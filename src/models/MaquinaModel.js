@@ -26,6 +26,8 @@ const maquinaSchema = new mongoose.Schema({
         ref: 'SedeModel',
         required: true
     }
+},{
+    timestamps: true //Para agregar propiedades createdAt y updatedAt Automaticamente
 })
 
 export default mongoose.model('MaquinaModel', maquinaSchema)
