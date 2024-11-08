@@ -22,18 +22,5 @@ const operacionSchema = new mongoose.Schema({
     timestamps: true 
 })
 
-operacionSchema.pre('save', async function(next) {
-    this.estadoOperacion = false
-    
-    let date = new Date()
-    if (!this.fecInicio) {
-        this.fecInicio = date.toLocaleDateString()
-    }
-    if (this.currentStage === 'finalizado' && !this.fecFinal) {
-        this.fecFinal = date.toLocaleDateString()
-        this.estadoOperacion = true
-    }
-    
-    next()
-})
+operacionSchema.index({ estadoOperacion: 1, currentStage: 1 });
 export default mongoose.model('OperacionModel' , operacionSchema)

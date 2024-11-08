@@ -5,7 +5,6 @@ import { getAllProcesos,
     deleteProceso, 
     updateProceso, 
     getProcesosByTipo,
-    createSequenceProceso,
     getProcesosByEstado
 } from "../controllers/procesosController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
@@ -20,7 +19,6 @@ router.get('/filter', planMiddleware(['pro', 'basic']), getProcesosByTipo);
 router.get('/status', planMiddleware(['pro', 'basic']), getProcesosByEstado);
 
 router.post('/', planMiddleware(['pro', 'basic']), createProceso);
-router.post('/sequential', planMiddleware(['pro', 'basic']), createSequenceProceso);
 
 router.delete('/:id', planMiddleware(['pro', 'basic']), deleteProceso);
 router.put('/:id', planMiddleware(['pro', 'basic']), updateProceso)

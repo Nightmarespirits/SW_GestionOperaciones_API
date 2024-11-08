@@ -1,6 +1,5 @@
 import ProcesoModel from "../models/ProcesoModel.js"
-import { createSequentialOperacion } from "./operacionController.js"
-import { createUnsequentialOperacion } from "./operacionController.js"
+import { createOperacionByProceso } from "./operacionController.js"
 
 export const getAllProcesos = async (req, res) => {
     try {
@@ -52,48 +51,27 @@ export const getProcesosByEstado = async(req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
-//Crud
-export const createSequenceProceso = async (req, res) => {
-    try {
-        const {
-            tipo, 
-            sede,
-            responsable,
-            detalles,
-            estado,
-            isSequential
-        } = req.body
-
-        const {operacion, proceso} = await createSequentialOperacion({
-            tipo, 
-            sede,
-            responsable,
-            detalles,
-            estado,
-            isSequential
-        })
-        res.status(201).json({message:'Proceso con seguimiento secuencial Agregado exitosamente', operacion, proceso })  
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-}
 
 export const createProceso = async (req, res) => {
     try {
-        const { tipo, sede, responsable, detalles, estado } = req.body;
+        const { 
+            tipo, 
+            sede, 
+            responsable, 
+            detalles, 
+            estado, 
+            isSequential
+         } = req.body;
 
-        // Validación básica para evitar procesar datos incompletos
-        if (!tipo || !sede || !responsable || !estado) {
-            return res.status(400).json({ message: 'Datos incompletos' });
-        }
 
         // Crear la operación
-        const { operacion, proceso } = await createUnsequentialOperacion({
+        const { operacion, proceso } = await createOperacionByProceso({
             tipo,
             sede,
             responsable,
             detalles,
-            estado
+            estado,
+            isSequential
         });
 
         // Responder con éxito incluyendo algún dato relevante

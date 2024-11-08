@@ -55,72 +55,32 @@ export const getOperacionesByEstado = async (req, res) => {
 };
 
 //Para insertar o actualizar proceso no secuencial (sin seguimiento)
-export const createUnsequentialOperacion = async (procesoData) => {
+export const createOperacionByProceso = async (procesoData) => {
     if (!procesoData.tipo) {
         throw new Error('El campo "tipo" es obligatorio.');
     }
-
     const proceso = new ProcesoModel(procesoData);
-
-    const estadoProceso = procesoData.estado;
-    
-    //Creamos operacion finalizamos si el proceso ya finalizo
+    let date = new Date()
+    //Creamos operacion 
     const operacion = new OperacionModel({
-        procesos: [proceso._id],
-        estadoOperacion: estadoProceso
+        fecInicio : date.toLocaleDateString(),
+        fecFinal : procesoData.isSequential ? '' : procesoData.estado ? date.toLocaleDateString(): '',
+        currentStage: procesoData.tipo,
+        estadoOperacion: procesoData.isSequential ? false : procesoData.isSequential,
+        procesos: [
+            proceso._id
+        ]
     });
 
     proceso.operacion = operacion._id;
 
     try {
-        await Promise.all([proceso.save(), operacion.save()]);
+        await Promise.all([ operacion.save(), proceso.save(),]);
     } catch (error) {
         throw new Error('Error al guardar la operación y el proceso: ' + error.message);
     }
 
     return { operacion, proceso };
-};
-
-//Para insertar o actualizar proceso secuencial (seguimiento de stages)
-export const createSequentialOperacion = async (procesoData) => {
-    const stages =['lavado', 'secado', 'doblado'];
-
-    let operacion;
-
-    if (procesoData.tipo === 'lavado') {
-        operacion = new OperacionModel({ currentStage: 'lavado' });
-    } else {
-        const precesorStage = obtenerStage(stages, procesoData.tipo, -1);
-
-        operacion = await OperacionModel.findOne({
-            estadoOperacion: false,
-            currentStage: precesorStage
-        }).sort({ createdAt: 1 });
-
-        if (!operacion) {
-            throw new Error(`No se encontró una operación con el predecesor "${precesorStage}"`);
-        }
-    }
-
-    const proceso = new ProcesoModel(procesoData);
-
-    operacion.currentStage = obtenerStage(stages, procesoData.tipo, +1)
-    operacion.procesos.push(proceso._id);
-    
-    proceso.operacion = operacion._id;
-
-    await Promise.all([proceso.save(), operacion.save()]);
-
-    return { operacion, proceso};
-};
-
-// Función de utilidad para obtener stages
-const obtenerStage = (stages, tipo, desplazamiento) => {
-    const index = stages.indexOf(tipo) + desplazamiento;
-    if (index < 0 || index >= stages.length) {
-        throw new Error(`El tipo de proceso "${tipo}" es inválido o no tiene stage válido.`);
-    }
-    return stages[index];
 };
 
 //Crud
