@@ -63,15 +63,16 @@ export const createOperacionByProceso = async (procesoData) => {
     let date = new Date()
     //Creamos operacion 
     const operacion = new OperacionModel({
-        fecInicio : date.toLocaleDateString(),
-        fecFinal : procesoData.isSequential ? '' : procesoData.estado ? date.toLocaleDateString(): '',
-        currentStage: procesoData.tipo,
-        estadoOperacion: procesoData.isSequential ? false : procesoData.isSequential,
+        fecInicio : `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`,
+        fecFinal : procesoData.isSequential ? 'Por Finalizar' : procesoData.estado == true ? `${date.toLocaleDateString()} ${date.toLocaleTimeString()}` : 'Pendiente',
+        currentStage: procesoData.isSequential ? procesoData.tipo: procesoData.estado === true ? 'finalizado': procesoData.tipo,
+        estadoOperacion: procesoData.isSequential ? false : procesoData.estado,
         procesos: [
             proceso._id
         ]
     });
 
+    //!POSIBLE ERROR DE CONCURRENCIA (No se llega a asignar el id por la concurrencia)
     proceso.operacion = operacion._id;
 
     try {

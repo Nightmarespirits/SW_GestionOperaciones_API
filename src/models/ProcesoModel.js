@@ -141,6 +141,7 @@ procesoSchema.pre('save', async function(next) {
             } else {
                 // Si es el último stage, actualizar el estado de la operación a Finalizado
                 await retryOperation(async () => {
+                    const date = new Date()
                     const session = await mongoose.startSession();
                     try {
                         await session.withTransaction(async () => {
@@ -155,7 +156,8 @@ procesoSchema.pre('save', async function(next) {
                             }
 
                             operacion.estadoOperacion = true;
-                            operacion.fecFinal = new Date().toLocaleDateString();
+                            operacion.fecFinal =  `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                            operacion.currentStage = 'finalizado'
                             await operacion.save({ session });
                         });
                     } finally {
@@ -163,6 +165,32 @@ procesoSchema.pre('save', async function(next) {
                     }
                 });
             }
+        }else if(this.isModified('estado') && this.estado === true){
+            //Actualizar para operaciones no secuenciales
+            await retryOperation(async () => {
+                const date = new Date()
+                const session = await mongoose.startSession();
+                try {
+                    await session.withTransaction(async () => {
+                        const operacion = await OperacionModel.findById(
+                            this.operacion,
+                            null,
+                            { session }
+                        );
+
+                        if (!operacion) {
+                            throw new Error(`Operacion con el ID ${this.operacion} No encontrada`);
+                        }
+
+                        operacion.estadoOperacion = true;
+                        operacion.fecFinal =  `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                        operacion.currentStage = 'finalizado'
+                        await operacion.save({ session });
+                    });
+                } finally {
+                    session.endSession();
+                }
+            });
         }
         next();
     } catch (error) {

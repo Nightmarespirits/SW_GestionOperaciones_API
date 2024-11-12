@@ -27,12 +27,19 @@ export const login = async(req, res) => {
         const {companyName, companyPassword} = req.body
         const company = await CompanyModel.findOne({companyName})
 
+        //Revisar linea 31
         if(!company || !(await company.comparePassword(companyPassword))){
-            return res.status(401).json({message: 'Credenciales Invalidas'})
+            return res.status(401).json({message: 'Credenciales Invalidas Contraseña incorrecta'})
         }
 
         const token = jsonwebtoken.sign(
-            {companyId: company._id, companyName: company.companyName, plan: company.plan },
+            {   
+                companyId: company._id, 
+                nombreLegal: company.nombreLegal,
+                ruc: company.ruc,
+                companyName: company.companyName, 
+                plan: company.plan,
+            },
             process.env.JWT_SECRET,
             {expiresIn: '12h'}
         )
