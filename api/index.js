@@ -1,4 +1,4 @@
-import app from "../src";
+import app from "../src/index.js"
 
 // Exporta la app como manejador de funciones serverless
 export default(req, res) =>{
