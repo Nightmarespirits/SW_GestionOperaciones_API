@@ -10,7 +10,8 @@ import operacionRoutes from './routes/operacionRoutes.js'
 import procesosRoutes from './routes/procesosRoutes.js'
 import sedeRoutes from './routes/sedeRoutes.js'
 const app = express()
-
+//Contador de solicitudes http
+let globalRequestsCounter = 0;
 //Conectar DB
 connectDB()
 
@@ -27,7 +28,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 //Rutas
 app.get('/', (req, res) => {
-    res.send('Welcome to SLC SW_GESTION_OPERACIONS_API')
+    globalRequestsCounter++
+    res.send(`Welcome to SLC SW_GESTION_OPERACIONS_API for more info see the documentation /n globalRequestCounter: ${globalRequestsCounter}`)
 })
 app.use('/auth', authRoutes);
 app.use('/company', companyRoutes);
@@ -42,5 +44,9 @@ app.use((err, req, res, next) => {
     res.status(500).json({message: 'Algo salio Mal!'})
 })
 
+/*Pausar inicializaicion de puerto para SERVERLESS
 const PORT = process.env.PORT || 2000;
-app.listen(PORT, () => { console.log(`Servidor corriendo en  el puerto ${PORT}`) })
+app.listen(PORT, () => { console.log(`Servidor corriendo en  el puerto ${PORT}`) })*/
+
+//Exportar configuracion
+export default app;
