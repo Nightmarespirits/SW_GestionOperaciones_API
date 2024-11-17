@@ -44,9 +44,9 @@ app.use((err, req, res, next) => {
     res.status(500).json({message: 'Algo salio Mal!'})
 })
 
-/*Pausar inicializaicion de puerto para SERVERLESS
+/*Pausar inicializaicion de puerto para SERVERLESS*/
 const PORT = process.env.PORT || 2000;
-app.listen(PORT, () => { console.log(`Servidor corriendo en  el puerto ${PORT}`) })*/
+app.listen(PORT, () => { console.log(`Servidor corriendo en  el puerto ${PORT}`) })
 
 //Exportar configuracion
-export default app;
+//export default app;
