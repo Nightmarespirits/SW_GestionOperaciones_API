@@ -63,8 +63,8 @@ export const createOperacionByProceso = async (procesoData) => {
     let date = new Date()
     //Creamos operacion 
     const operacion = new OperacionModel({
-        fecInicio : `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`,
-        fecFinal : procesoData.isSequential ? 'Por Finalizar' : procesoData.estado == true ? `${date.toLocaleDateString()} ${date.toLocaleTimeString()}` : 'Pendiente',
+        fecInicio : date.toISOString(),
+        fecFinal : procesoData.isSequential ? 'Por Finalizar' : procesoData.estado == true ? date.toISOString(): 'Pendiente',
         currentStage: procesoData.isSequential ? procesoData.tipo: procesoData.estado === true ? 'finalizado': procesoData.tipo,
         estadoOperacion: procesoData.isSequential ? false : procesoData.estado,
         procesos: [

@@ -80,8 +80,8 @@ const retryOperation = async (operation, maxRetries = 3, delay = 1000) => {
 procesoSchema.pre('save', async function(next) {
     try {
         const date = new Date();
-        this.fecha = date.toLocaleDateString();
-        this.hora = date.toLocaleTimeString();
+        this.fecha = date.toISOString();
+        this.hora = date.toISOString();
 
         if (this.isModified('estado') && this.estado === true && this.isSequential === true) {
             const nextStage = getNextStage(this.tipo);
@@ -156,7 +156,7 @@ procesoSchema.pre('save', async function(next) {
                             }
 
                             operacion.estadoOperacion = true;
-                            operacion.fecFinal =  `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                            operacion.fecFinal =  date.toISOString();
                             operacion.currentStage = 'finalizado'
                             await operacion.save({ session });
                         });
@@ -183,7 +183,7 @@ procesoSchema.pre('save', async function(next) {
                         }
 
                         operacion.estadoOperacion = true;
-                        operacion.fecFinal =  `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                        operacion.fecFinal =  date.toISOString();
                         operacion.currentStage = 'finalizado'
                         await operacion.save({ session });
                     });
