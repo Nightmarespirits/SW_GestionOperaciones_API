@@ -2,13 +2,8 @@ import 'dotenv/config'
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/database.js';
-import authRoutes from './routes/authRoutes.js';
-import companyRoutes from './routes/companyRoutes.js';
-import empleadoRoutes from './routes/empleadoRoutes.js';
-import maquinaRoutes from './routes/maquinaRoutes.js';
-import operacionRoutes from './routes/operacionRoutes.js'
-import procesosRoutes from './routes/procesosRoutes.js'
-import sedeRoutes from './routes/sedeRoutes.js'
+import mainRoutes from './routes/mainRoutes.js';
+
 const app = express()
 //Contador de solicitudes http
 let globalRequestsCounter = 0;
@@ -26,27 +21,22 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-//Rutas
+
+//Ruta principal
 app.get('/', (req, res) => {
     globalRequestsCounter++
     res.send(`Welcome to SLC SW_GESTION_OPERACIONS_API for more info see the documentation /n globalRequestCounter: ${globalRequestsCounter}`)
 })
-app.use('/auth', authRoutes);
-app.use('/company', companyRoutes);
-app.use('/empleado', empleadoRoutes)
-app.use('/maquina', maquinaRoutes)
-app.use('/operacion', operacionRoutes);
-app.use('/procesos', procesosRoutes);
-app.use('/sede', sedeRoutes)
+
+//Rutas principales de la API
+app.use('/api', mainRoutes);
+
 //Manejador errores globales
 app.use((err, req, res, next) => {
     console.error(err.stack)
     res.status(500).json({message: 'Algo salio Mal!'})
 })
 
-/*Pausar inicializaicion de puerto para SERVERLESS*/
-// const PORT = process.env.PORT || 2000;
-// app.listen(PORT, () => { console.log(`Servidor corriendo en  el puerto ${PORT}`) })
-
-//Exportar configuracion
-export default app;
+//Inicializacion del servidor
+const PORT = process.env.PORT || 2000;
+app.listen(PORT, () => { console.log(`Servidor corriendo en  el puerto http://localhost:${PORT}`) })
