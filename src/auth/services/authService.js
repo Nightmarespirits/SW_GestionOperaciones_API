@@ -1,1 +1,0 @@
-import CompanyModel from '../../company/model/CompanyModel.js'

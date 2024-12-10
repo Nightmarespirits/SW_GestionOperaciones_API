@@ -7,13 +7,13 @@ import operacionRoutes from '../operacion/routes/operacionRoutes.js'
 import procesosRoutes from '../operacion/routes/procesosRoutes.js'
 import sucursalRoutes from '../sucursal/routes/sucursalRoutes.js'
 
-const mainRoutes = Router()
+const mainRoutes = Router({mergeParams: true})
 mainRoutes.use('/auth', authRoutes)
 mainRoutes.use('/company', companyRoutes)
-mainRoutes.use('/empleado', empleadoRoutes)
+mainRoutes.use('/:companyId/empleado', empleadoRoutes)
 mainRoutes.use('/:companyId/maquinas', maquinaRoutes)
-mainRoutes.use('/operacion', operacionRoutes)
-mainRoutes.use('/procesos', procesosRoutes)
+mainRoutes.use('/:companyId/operacion', operacionRoutes)
+mainRoutes.use('/:companyId/procesos', procesosRoutes)
 mainRoutes.use('/:companyId/sucursales', sucursalRoutes)
 
 export default mainRoutes

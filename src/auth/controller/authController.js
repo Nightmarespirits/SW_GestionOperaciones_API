@@ -8,18 +8,19 @@ import {
 export const register = async(req, res) => {
     try {
         const {nombreLegal, ruc, companyPassword, companyName, plan, sedes, estado, logoUrl, descripcion, telefono, email, direccion} = req.body;
+        
         const company = new CompanyModel({
             nombreLegal, 
-            ruc, 
             companyPassword, 
             companyName, 
+            email,
+            ruc, 
             plan, 
             sedes,
             estado,
             logoUrl,
             descripcion,
             telefono,
-            email,
             direccion
         })
 
@@ -29,17 +30,21 @@ export const register = async(req, res) => {
     } catch (error) {
 
         if (error.code === 11000) {
-            if(error.keyPattern && error.keyPattern.ruc){
-                return res.status(400).json({ message: 'El RUC ingresado ya está registrado. Por favor, ingrese un RUC único.'});
-            }else if(error.keyPattern && error.keyPattern.nombreLegal){
-               return res.status(400).json({ message: `El Nombre de la Empresa ya está registrado. Por favor, ingrese un nombre de empresa unico`});
-            }else if(error.keyPattern && error.keyPattern.companyName){
-                return res.status(400).json({ message: `El Nombre de usuario de la empresa ya esta en uso, Por favor Ingresa otro.`});
+            let msg = ''
+            if(error.keyPattern && error.keyPattern.nombreLegal){
+               msg += 'El Nombre de la Empresa ya está registrado.'
+            } 
+            if(error.keyPattern && error.keyPattern.companyName){
+                msg += 'El Nombre de usuario de la empresa ya esta en uso.'
+            } 
+            if (error.keyPattern?.email) {
+                msg += 'El correo electrónico ingresado ya está registrado.'
             }
+            return res.status(400).json({message: msg})
         }
 
         if (error.name === 'ValidationError') {
-        return res.status(400).json({ message: error.message });
+            return res.status(400).json({ message: error.message });
         }
       
         res.status(400).json({message: error.message})

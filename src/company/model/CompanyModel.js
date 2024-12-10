@@ -9,12 +9,6 @@ const companySchema = new mongoose.Schema({
     trim: true,
     unique: true
   },
-  ruc: { 
-    type: String, 
-    required: true,
-    unique: true,
-    match: [/^[0-9]{11}$/, 'Por favor ingrese un RUC válido de 11 dígitos']
-  },
   companyName: { 
     type: String, 
     required: true,
@@ -28,11 +22,14 @@ const companySchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true,
-    match: [/^\S+@\S+\.\S+$/, 'Por favor ingrese un email válido']
+    match: [/^\S+@\S+\.\S+$/, 'Por favor ingrese un email válido'],
+    unique: true,
   },
-
+  ruc: { 
+    type: String,
+    match: [/^[0-9]{11}$/, 'Por favor ingrese un RUC válido de 11 dígitos']
+  },
   plan: { 
     type: String, 
     enum: ['free', 'basic', 'premium', 'root'], 
@@ -54,7 +51,6 @@ const companySchema = new mongoose.Schema({
   },
   telefono:{
     type: String,
-    match: [/^[0-9]{9}$/, 'Por favor ingrese un número válido de 9 dígitos']
   },
   direccion: {
     type: String
@@ -73,6 +69,10 @@ const companySchema = new mongoose.Schema({
     timestamps: true //Para agregar propiedades createdAt y updatedAt Automaticamente
 })
 
+
+//Indice parcial para el campo ruc 
+companySchema.index({ ruc: 1 }, { unique: true, partialFilterExpression: { ruc: { $exists: true } } });
+
 companySchema.pre('save', async function(next) {
     if(!this.isModified('companyPassword')) return next;
     this.companyPassword = await bcrypt.hash(this.companyPassword, 10)
@@ -82,9 +82,5 @@ companySchema.pre('save', async function(next) {
 companySchema.methods.comparePassword = async function(candidatePassword){
     return bcrypt.compare(candidatePassword, this.companyPassword)
 }
-
-companySchema.index({ companyName: 1 });
-companySchema.index({ ruc: 1 });
-companySchema.index({ email: 1 });
 
 export default mongoose.model('CompanyModel', companySchema);

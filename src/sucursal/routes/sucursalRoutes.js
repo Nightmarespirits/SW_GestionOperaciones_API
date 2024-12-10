@@ -7,10 +7,10 @@ const router = express.Router({mergeParams : true})
 router.use(authMiddleware)
 
 
-router.get('/:id', planMiddleware(['premium', 'basic']), getSucursalById);
-router.get('/', planMiddleware(['premium', 'basic']), getSucursales)
-router.post('/', planMiddleware(['premium', 'basic']), createSucursal);
-router.put('/:id', planMiddleware(['premium', 'basic']), updateSucursal)
-router.delete('/:id', planMiddleware(['premium', 'basic']), deleteSucursal);
+router.get('/:id', planMiddleware([ 'root', 'premium', 'basic', 'free']), getSucursalById);
+router.get('/', planMiddleware([ 'root', 'premium', 'basic', 'free']), getSucursales)
+router.post('/', planMiddleware([ 'root', 'premium', 'basic']), createSucursal);
+router.put('/:id', planMiddleware([ 'root', 'premium', 'basic']), updateSucursal)
+router.delete('/:id', planMiddleware([ 'root', 'premium', 'basic']), deleteSucursal);
 
 export default router   

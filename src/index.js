@@ -3,6 +3,16 @@ import express from 'express';
 import cors from 'cors';
 import connectDB from './config/database.js';
 import mainRoutes from './routes/mainRoutes.js';
+import CompanyModel from './company/model/CompanyModel.js';
+// Sincroniza los índices del modelo con la base de datos
+// CompanyModel.syncIndexes()
+//     .then(() => {
+//     console.log('Índices sincronizados correctamente.');
+//     })
+//     .catch((error) => {
+//     console.error('Error al sincronizar los índices:', error);
+// });
+
 
 const app = express()
 //Contador de solicitudes http

@@ -76,7 +76,25 @@ export const createSucursal = async (req, res) => {
         await sucursal.save()
         res.status(201).json({message:'Sucursal Regitrada Exitosamente'})  
     } catch (error) {
-        res.status(500).json({message: error.message})
+        if (error.code === 11000) {
+            let msg = ''
+            if(error.keyPattern && error.keyPattern.nombreLegal){
+               msg += 'El Nombre de la Empresa ya está registrado.'
+            } 
+            if(error.keyPattern && error.keyPattern.companyName){
+                msg += 'El Nombre de usuario de la empresa ya esta en uso.'
+            } 
+            if (error.keyPattern?.email) {
+                msg += 'El correo electrónico ingresado ya está registrado.'
+            }
+            return res.status(400).json({message: msg})
+        }
+
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ message: error.message });
+        }
+      
+        res.status(400).json({message: error.message})
     }
 }
 

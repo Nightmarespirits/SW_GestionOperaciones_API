@@ -1,21 +1,21 @@
 # Modulo Autenticación
 ## Registro
-## Registro Completo (isVerified sera Falso)
+### Registro Completo (isVerified sera Falso)
 POST
 http://localhost:8080/api/auth/register
 body:
 {
   "nombreLegal": "Lavandería Express S.A.C.",
-  "ruc": "20123456789",
-  "companyPassword": "contraseña123",
   "companyName": "LavanderiaExpress",
+  "companyPassword": "contraseña123",
+  "email": "contacto@lavanderiaexpress.com",
+  "ruc": "20123456789",
   "plan": "premium",
-  "sedes": ["64a5f2d37e2517e6c45a1234"], 
+  "sucursales": ["64a5f2d37e2517e6c45a1234"], 
   "estado": true,
   "logoUrl": "https://ejemplo.com/logo.png",
   "descripcion": "Servicio de lavandería industrial con más de 10 años de experiencia",
   "telefono": "987654321",
-  "email": "contacto@lavanderiaexpress.com",
   "direccion": "Av. Industrial 123, Lima"
 }
 RESPUESTA:
@@ -27,11 +27,10 @@ POST
 http://localhost:8080/api/auth/register
 body
 {
-  "nombreLegal": "Lavandria Ecologica S.A.",
-  "ruc": "98765432192",
-  "companyName": "ecologic",
-  "companyPassword": "somepass21",
-  "email": "clidertutayarivera@gmail.com"
+  "nombreLegal": "Speed Wash  SAC",
+  "companyName": "speedwash",
+  "companyPassword": "sw1234",
+  "email": "shunshine@gmail.com"
 }
 RESPUESTA:
 {
@@ -122,7 +121,7 @@ RESPUESTA:
 # Modulo Sucursal
 ## Crear Sucursal
 POST
-http://localhost:8080/api/sucursal/
+http://localhost:8080/api/:companyId/sucursales
 body:
 {
     "company": {
@@ -319,3 +318,14 @@ RESPUESTA:
 
 
 # Modulo Mantenimiento
+
+
+
+
+
+
+
+
+
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOiI2NzU3N2FjZDdkMDg0ZWU2Y2ZiODdmZjAiLCJub21icmVMZWdhbCI6InJvb3QiLCJjb21wYW55TmFtZSI6InJvb3QiLCJwbGFuIjoicm9vdCIsImVtYWlsIjoiY2xpZGVydHV0YXlhcml2ZXJhQGdtYWlsLmNvbSIsImlhdCI6MTczMzc4NjM1NywiZXhwIjoxNzMzODI5NTU3fQ.py2gQiNRuYsfxRPfdJmc73dMAYv2iJ4TLlp7ZrsEa3k
