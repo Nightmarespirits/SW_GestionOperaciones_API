@@ -7,7 +7,7 @@ const sucursalSchema = new mongoose.Schema({
         ref: 'CompanyModel',
         required: true
     },
-    nombre: { 
+    nombreSucursal: { 
         type: String,
         required: true,
         trim: true
@@ -56,7 +56,7 @@ const sucursalSchema = new mongoose.Schema({
     timestamps: true
 })
 
-sucursalSchema.index({ company: 1, nombre: 1 }, { unique: true })
+sucursalSchema.index({ company: 1, nombreSucursal: 1 }, { unique: true })
 
 export default mongoose.model('SucursalModel', sucursalSchema)
 

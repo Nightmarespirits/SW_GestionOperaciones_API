@@ -158,10 +158,7 @@ POST
 http://localhost:8080/api/:companyId/sucursales
 body:
 {
-    "company": {
-        "_id": "6755fa58993692540816de04"
-    },
-    "nombre": "Sede Central Lima",
+    "nombreSucursal": "Sede Central Lima",
     "direccion": "Av. Javier Prado 1234, San Isidro",
     "telefono": "+51 987654321",
     "email": "sede.central@lavanderiaexpress.com",
@@ -189,33 +186,29 @@ RESPUESTA:
 
 ## Obtener todas las sucursales
 GET
-http://localhost:8080/api/sucursal/
+http://localhost:8080/api/:companyId/sucursales/
 RESPUESTA:
 [{},{}] -> Array de sucursales
+PARAMETROS
+:companyId -> el id de la empresa
 
 ## Obtener sucursal por ID
 GET
-http://localhost:8080/api/sucursal/:id
+http://localhost:8080/api/:companyId/sucursales/:id
 RESPUESTA:
 {} -> Sucursal  
 PARAMETROS:
-id: 64a5f2d37e2517e6c45a1234 -> ID de la sucursal
-
-## Obtener sucursal por company ID
-GET
-http://localhost:8080/api/sucursal/company/:id
-RESPUESTA:
-[{},{}] -> Array de sucursales de la empresa 
-PARAMETROS:
-id: 64a5f2d37e2517e6c45a1234 -> ID de la empresa
+:companyId -> ID de la empresa
+:id  -> ID de la sucursal
 
 ## Actualizar sucursal
 PUT
-http://localhost:8080/api/sucursal/:id
+http://localhost:8080/api/:companyId/sucursales/:id
 body:
-{}
+{} -> Sucursal con los datos a actualizar
 PARAMETROS:
-id: 64a5f2d37e2517e6c45a1234 -> ID de la sucursal
+:companyId -> ID de la empresa
+id:  -> ID de la sucursal
 RESPUESTA:
 {
   message: "Sucursal actualizada exitosamente"
@@ -223,9 +216,10 @@ RESPUESTA:
 
 ## Eliminar sucursal
 DELETE
-http://localhost:8080/api/sucursal/:id
+http://localhost:8080/api/:companyId/sucursales/:id
 PARAMETROS:
-id: 64a5f2d37e2517e6c45a1234 -> ID de la sucursal
+:id -> ID de la sucursal
+:companyId -> ID de la empresa
 RESPUESTA:
 {
   message: "Sucursal eliminada exitosamente"

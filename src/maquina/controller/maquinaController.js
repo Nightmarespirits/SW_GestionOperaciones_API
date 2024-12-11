@@ -51,38 +51,42 @@ export const getMaquinaByCodigoFabrica = async (req, res) => {
 export const createMaquina = async (req, res) => {
     try {
         const companyId = req.params.companyId
+        const sucursalId = req.params.sucursalId
+
         const {
             tipo,
             modelo,
             marca,
             codigoFabrica,
-            nombre,
+            nombreMaquina,
             caracteristicas,
             fechaInstalacion,
             ultimoMantenimiento,
             proximoMantenimiento,
-            horasUso,
-            sucursal
+            horasUso
         } = req.body
 
         // Validar que el companyId sea un ObjectId válido
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             return res.status(400).json({ message: 'ID de compañía inválido' });
         }
+        if (!mongoose.Types.ObjectId.isValid(sucursalId)) {
+            return res.status(400).json({ message: 'ID de sucursal inválido' });
+        }
         
         const maquina = new MaquinaModel({ 
             company: {_id: companyId},
+            sucursal : {_id: sucursalId},
             tipo,
             modelo,
             marca,
             codigoFabrica,
-            nombre,
+            nombreMaquina,
             caracteristicas,
             fechaInstalacion,
             ultimoMantenimiento,
             proximoMantenimiento,
-            horasUso,
-            sucursal
+            horasUso
         });
 
         await maquina.save();
@@ -114,13 +118,13 @@ export const updateMaquina= async (req, res) => {
             modelo,
             marca,
             codigoFabrica,
-            nombre,
+            nombreMaquina,
             caracteristicas,
             fechaInstalacion,
             ultimoMantenimiento,
             proximoMantenimiento,
             horasUso,
-            sede
+            sucursal
         } = req.body
         const maquina = await MaquinaModel.findByIdAndUpdate(
             req.params.id,
@@ -130,13 +134,13 @@ export const updateMaquina= async (req, res) => {
                 modelo,
                 marca,
                 codigoFabrica,
-                nombre,
+                nombreMaquina,
                 caracteristicas,
                 fechaInstalacion,
                 ultimoMantenimiento,
                 proximoMantenimiento,
                 horasUso,
-                sede
+                sucursal
             },
             {new: true}
         )

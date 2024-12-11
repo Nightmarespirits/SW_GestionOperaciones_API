@@ -44,7 +44,7 @@ export const createSucursal = async (req, res) => {
     try {
         const companyId = req.params.companyId;
         const {
-            nombre,
+            nombreSucursal,
             direccion,
             telefono,
             email,
@@ -54,16 +54,17 @@ export const createSucursal = async (req, res) => {
             capacidadMaxima,
             maquinas,
             encargado
-        } = req.body
+        } = req.body;
 
+        // Validar el formato del ID de compañía
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             return res.status(400).json({ message: 'ID de compañía inválido' });
         }
 
         const sucursal = new SucursalModel({
             company: companyId,
-            nombre,
-            direccion, 
+            nombreSucursal,
+            direccion,
             telefono,
             email,
             estado,
@@ -72,36 +73,34 @@ export const createSucursal = async (req, res) => {
             capacidadMaxima,
             maquinas,
             encargado
-        })
-        await sucursal.save()
-        res.status(201).json({message:'Sucursal Regitrada Exitosamente'})  
+        });
+
+        // Guardar la sucursal
+        await sucursal.save();
+        res.status(201).json({ message: 'Sucursal registrada exitosamente' });
     } catch (error) {
+        // Capturar errores de clave duplicada
         if (error.code === 11000) {
-            let msg = ''
-            if(error.keyPattern && error.keyPattern.nombreLegal){
-               msg += 'El Nombre de la Empresa ya está registrado.'
-            } 
-            if(error.keyPattern && error.keyPattern.companyName){
-                msg += 'El Nombre de usuario de la empresa ya esta en uso.'
-            } 
-            if (error.keyPattern?.email) {
-                msg += 'El correo electrónico ingresado ya está registrado.'
-            }
-            return res.status(400).json({message: msg})
+            return res.status(400).json({
+                message: `La sucursal ya está registrada.`
+            });
         }
 
+        // Capturar errores de validación
         if (error.name === 'ValidationError') {
             return res.status(400).json({ message: error.message });
         }
-      
-        res.status(400).json({message: error.message})
+
+        // Capturar otros errores
+        console.error('Error al crear la sucursal:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
     }
-}
+};
 
 export const updateSucursal = async (req, res) => {
     try {
         const {
-            nombre,
+            nombreSucursal,
             direccion,
             telefono,
             email,
@@ -116,7 +115,7 @@ export const updateSucursal = async (req, res) => {
         const sucursal = await SucursalModel.findByIdAndUpdate(
             req.params.id,
             {
-                nombre,
+                nombreSucursal,
                 direccion,
                 telefono,
                 email,

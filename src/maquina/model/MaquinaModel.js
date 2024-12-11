@@ -28,7 +28,7 @@ const maquinaSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    nombre: {
+    nombreMaquina: {
         type: String,
         required: true
     },
@@ -39,7 +39,7 @@ const maquinaSchema = new mongoose.Schema({
         },
         unidadCapacidad: {
             type: String,
-            enum: ['kg', 'lb'],
+            enum: ['kg', 'lb', 'l'],
             required: true
         },
         consumoEnergetico: Number,
