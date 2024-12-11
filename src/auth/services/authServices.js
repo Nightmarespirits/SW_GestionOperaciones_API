@@ -26,7 +26,7 @@ export const sendVerificationEmail = async (email, verificationCode) => {
 // Generar y enviar un nuevo código de verificación
 export const generateAndSendVerificationCode = async (email) => {
   const company = await CompanyModel.findOne({ email });
-  if (!company) throw new Error('Empresa no encontrada.');
+  if (!company) throw new Error('Correo Electronico no Encontrado.');
 
   if (company.isVerified) throw new Error('El correo ya ha sido verificado.');
 
@@ -59,3 +59,22 @@ export const verifyEmailCode = async (email, code) => {
 
   return { message: 'Correo electrónico verificado exitosamente.' };
 };
+
+export const restorePassword = async (email, code, newPassword) => {
+    const company = await CompanyModel.findOne({ email });
+
+    if (!company) throw new Error('Empresa no encontrada.');
+    if (company.isVerified) throw new Error('El correo ya ha sido verificado.');
+
+    if (company.verificationCode !== code) throw new Error('Código de verificación inválido.');
+    if (new Date() > company.verificationCodeExpiresAt) throw new Error('El código de verificación ha expirado.');
+
+    company.isVerified = true;
+    company.verificationCode = undefined;
+    company.verificationCodeExpiresAt = undefined;
+    company.companyPassword = newPassword;
+
+    await company.save();
+
+    return { message: 'Se Restablecio la contraseña, Vuelva a Iniciar Session' };
+}

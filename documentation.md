@@ -63,12 +63,23 @@ body:
     "companyPassword" : "contraseña123"
 }
 RESPUESTA:
-
 {   
-    "message": "Inicio de sesión exitoso",
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOiI2NzU1ZGIxMjMyZjc1Mzk1MTZlM2VjNjAiLCJub21icmVMZWdhbCI6IkxhdmFuZGVyw61hIEV4cHJlc3MgUy5BLkMuIiwicnVjIjoiMjAxMjM0NTY3ODkiLCJjb21wYW55TmFtZSI6IkxhdmFuZGVyaWFFeHByZXNzIiwicGxhbiI6InByZW1pdW0iLCJsb2dvVXJsIjoiaHR0cHM6Ly9lamVtcGxvLmNvbS9sb2dvLnBuZyIsImRlc2NyaXBjaW9uIjoiU2VydmljaW8gZGUgbGF2YW5kZXLDrWEgaW5kdXN0cmlhbCBjb24gbcOhcyBkZSAxMCBhw7FvcyBkZSBleHBlcmllbmNpYSIsInRlbGVmb25vIjoiOTg3NjU0MzIxIiwiZW1haWwiOiJjb250YWN0b0BsYXZhbmRlcmlhZXhwcmVzcy5jb20iLCJkaXJlY2Npb24iOiJBdi4gSW5kdXN0cmlhbCAxMjMsIExpbWEiLCJpYXQiOjE3MzM2ODA2NDcsImV4cCI6MTczMzcyMzg0N30.w6elUiUjhhPUQdeaj7bQZKhK5rlbHTS9um3KZZvUT0s"
 }
 
+### Contraseña Olvidada
+#### Restaurar Contraseña
+* Previo envio de codigo de restauracion en email
+POST 
+http://localhost:8080/api/auth//forget-password
+body
+{
+    "email": "clidertutayarivera@gmail.com",
+    "verificationCode". "988712", 
+    "newPassword": "minuevacontraseña"
+ }
+RESPUESTA:
+{ message: 'Se Restablecio la contraseña, Vuelva a Iniciar Session' };
 
 # Modulo Empresa
 ## Obtener todas las empresas
@@ -117,6 +128,29 @@ RESPUESTA:
     "message": "Empresa Elimiada exitosamente"
 }
 
+## Cambiar Contraseña Empresa
+POST
+http://localhost:8080/api/company/:companyId/change-password
+BODY
+{
+    "companyPassword" : "root12", 
+    "newPassword" : "123456"
+}
+RESPONSE
+{
+    "message": "Contraseña cambiada exitosamente"
+}
+
+## Validar Contraseña de Empresa
+POST http://localhost:8080/api/company/6756e09183b64ad9c902c08c/validate-password
+BODY
+{
+    "attempPassword" : "123456"
+}
+RESPONSE
+{
+    "message": "Contraseña Correcta"
+}
 
 # Modulo Sucursal
 ## Crear Sucursal

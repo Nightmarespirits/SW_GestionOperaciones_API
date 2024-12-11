@@ -3,7 +3,8 @@ import CompanyModel from "../../company/model/CompanyModel.js";
 import {
     generateAndSendVerificationCode,
     verifyEmailCode,
-  } from '../services/verificationService.js';
+    restorePassword
+  } from '../services/authServices.js';
 
 export const register = async(req, res) => {
     try {
@@ -56,8 +57,7 @@ export const login = async(req, res) => {
         const {companyName, companyPassword} = req.body
         const company = await CompanyModel.findOne({companyName})
 
-        //Revisar linea 31
-        if(!company || !(await company.comparePassword(companyPassword))){
+        if(!company || !(await company.validatePassword(companyPassword))){
             return res.status(401).json({message: 'Credenciales Invalidas Contraseña incorrecta'})
         }
 
@@ -80,6 +80,16 @@ export const login = async(req, res) => {
 
         res.json({token})
     } catch (error) {
+        res.status(400).json({message: error.message})
+    }
+}
+
+export const forgetPassword = async( req, res) => {
+    try{
+        const {email, verificationCode, newPassword} = req.body
+        const result = await restorePassword(email, verificationCode, newPassword)
+        res.status(200).json(result)
+    }catch(error){
         res.status(400).json({message: error.message})
     }
 }

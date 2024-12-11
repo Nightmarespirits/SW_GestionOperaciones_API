@@ -79,8 +79,27 @@ companySchema.pre('save', async function(next) {
     this.estado = true
 })
 
-companySchema.methods.comparePassword = async function(candidatePassword){
-    return bcrypt.compare(candidatePassword, this.companyPassword)
+companySchema.methods.validatePassword = async function(attempPassword){
+    return bcrypt.compare(attempPassword, this.companyPassword)
 }
 
-export default mongoose.model('CompanyModel', companySchema);
+companySchema.methods.changePassword = async function (currentPassword, newPassword) {
+
+  const isPassValid = await this.validatePassword(currentPassword);
+  if (!isPassValid) {
+    throw new Error('Contraseña actual incorrecta');
+  }
+
+  const isSamePassword = await bcrypt.compare(newPassword, this.companyPassword);
+  if (isSamePassword) {
+    throw new Error('La nueva contraseña no puede ser igual a la contraseña actual');
+  }
+
+  if (newPassword.length < 6) {
+    throw new Error('La nueva contraseña debe tener al menos 6 caracteres');
+  }
+
+  this.companyPassword = newPassword;
+  return true;
+}
+export default mongoose.model('CompanyModel', companySchema); 

@@ -57,13 +57,24 @@ export const deleteCompany = async (req, res) => {
 export const changeCompanyPassword = async (req, res) => {
     try{
         const {companyId} = req.params
-        const {oldPassword, newPassword} = req.body
+        const {companyPassword, newPassword} = req.body
 
-        const updateCompany = await changePassword(companyId, oldPassword, newPassword)
+        const company = await CompanyModel.findById(companyId);
 
-        res.json({ message: 'Contraseña actualizada exitosamente', company: updateCompany });
+        if (!company) {
+            return res.status(404).json({ message: 'Empresa no encontrada' });
+        }
+
+        const passwordChanged = await company.changePassword(companyPassword, newPassword);
+        
+        if (passwordChanged) {
+            await company.save(); // Importante: guardar los cambios
+            return res.status(200).json({ message: 'Contraseña cambiada exitosamente' });
+        } else {
+            return res.status(400).json({ message: 'Contraseña incorrecta, Intente de Nuevo' });
+        }
     }catch (error) {
-
+        res.status(400).json({message: error.message})
     }
 }
 
@@ -79,7 +90,7 @@ export const validateCompanyPassword = async (req, res) => {
             throw new Error('Empresa no encontrada');
         }
 
-        const isMatch = await company.companyPassword(attempPassword)
+        const isMatch = await company.validatePassword(attempPassword)
 
         if (isMatch) {
             res.status(200).json({ message: 'Contraseña Correcta' });

@@ -3,16 +3,16 @@ import { getAllCompanies, getCompanyById, updateCompany, deleteCompany, changeCo
 import authMiddleware from "../../auth/middleware/authMiddleware.js";
 import planMiddleware from "../../auth/middleware/planMiddleware.js";
 
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.use(authMiddleware);
 
 router.get('/', planMiddleware(['root']), getAllCompanies)
+router.post('/:companyId/validate-password', planMiddleware(['root','premium', 'basic']), validateCompanyPassword)
+router.post('/:companyId/change-password', planMiddleware(['root','premium', 'basic']), changeCompanyPassword )
 router.get('/:id', planMiddleware(['root','premium', 'basic']), getCompanyById);
 router.put('/:id', planMiddleware(['root','premium', 'basic']), updateCompany);
 router.delete('/:id', planMiddleware(['root']), deleteCompany);
-router.post('/change-password', planMiddleware(['root','premium', 'basic']), changeCompanyPassword )
-router.post('/validate-password', planMiddleware(['root','premium', 'basic']), validateCompanyPassword )
 
 
 export default router   
