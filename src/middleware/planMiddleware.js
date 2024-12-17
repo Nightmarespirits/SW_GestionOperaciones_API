@@ -1,5 +1,7 @@
+
 const planMiddleware = (planes) => {
     return (req, res, next) => {
+
         if(!req.company){
             return res.status(401).json({message: 'No Autenticado'})
         }

@@ -1,5 +1,4 @@
 import CompanyModel from "../model/CompanyModel.js";
-import { changePassword } from "../services/companyServices.js";
 
 export const getAllCompanies = async (req, res) => {
     try {

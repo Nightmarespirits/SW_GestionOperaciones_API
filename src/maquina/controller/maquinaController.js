@@ -112,8 +112,8 @@ export const getMaquinaById = async (req, res) => {
 
 export const updateMaquina= async (req, res) => {
     try {
+        const {companyId} =  req.params
         const {
-            company,
             tipo,
             modelo,
             marca,
@@ -129,7 +129,7 @@ export const updateMaquina= async (req, res) => {
         const maquina = await MaquinaModel.findByIdAndUpdate(
             req.params.id,
             {
-                company,
+                company :  {_id : companyId},
                 tipo,
                 modelo,
                 marca,

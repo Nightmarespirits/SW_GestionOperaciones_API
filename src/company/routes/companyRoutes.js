@@ -1,7 +1,7 @@
 import express from "express";
 import { getAllCompanies, getCompanyById, updateCompany, deleteCompany, changeCompanyPassword, validateCompanyPassword } from "../controller/companyController.js";
-import authMiddleware from "../../auth/middleware/authMiddleware.js";
-import planMiddleware from "../../auth/middleware/planMiddleware.js";
+import authMiddleware from "../../middleware/planMiddleware.js";
+import planMiddleware from "../../middleware/planMiddleware.js";
 
 const router = express.Router({mergeParams: true});
 

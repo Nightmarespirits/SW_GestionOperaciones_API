@@ -7,8 +7,8 @@ import {
     updateMaquina,
     deleteMaquina
 } from "../controller/maquinaController.js";
-import authMiddleware from "../../auth/middleware/authMiddleware.js";
-import planMiddleware from "../../auth/middleware/planMiddleware.js";
+import authMiddleware from "../../middleware/authMiddleware.js";
+import planMiddleware from "../../middleware/planMiddleware.js";
 
 const router = express.Router({ mergeParams: true })
 router.use(authMiddleware)

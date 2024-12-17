@@ -230,14 +230,14 @@ RESPUESTA:
 # Modulo Maquina
 ## Crear Maquina
 POST
-http://localhost:8080/api/:companyId/maquinas
+http://localhost:8080/api/:companyId/maquinas/:sucursalId/
 body:
 {
     "tipo": "Secadora",
     "modelo": "Secadora",
     "marca": "Samsumg",
     "codigoFabrica": "HAAS-FR2000-0123",
-    "nombre": "Secadora 2",
+    "nombreMaquina": "Secadora 2",
     "caracteristicas": {
         "capacidad": 500,
         "unidadCapacidad": "kg",
@@ -256,10 +256,11 @@ body:
     },
     "proximoMantenimiento": "2023-12-20",
     "horasUso": 2500,
-    "sucursal": "67561bff59f74bee5fbcfc26"
 }
 PARAMETROS:
-companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
+:companyId -> ID de la empresa
+:sucursalId -> ID de la sucursal
+
 RESPUESTA:
 {
     "message": "Maquina registrada exitosamente"
@@ -276,7 +277,7 @@ RESPUESTA:
 
 ## Filtar maquinas por Tipo
 GET
-http://localhost:8080/api/6755fb8457ffc88c52f7b277/maquinas?tipo=Lavadora
+http://localhost:8080/api/:companyId/maquinas?tipo=Lavadora
 PARAMETROS:
 companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
 tipo: Secadora | Lavadora | Planchadora -> Tipo de maquina
@@ -294,7 +295,7 @@ RESPUESTA:
 
 ## Filtrar maquinas por Tipo y Sucursal
 GET
-http://localhost:8080/api/6755fb8457ffc88c52f7b277/maquinas?tipo=Lavadora&sucursal=67561bff59f74bee5fbcfc26
+http://localhost:8080/api/:companyId/maquinas?tipo=Lavadora&sucursal=ID
 PARAMETROS:
 companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
 tipo: Secadora | Lavadora | Planchadora -> Tipo de maquina
@@ -345,15 +346,293 @@ RESPUESTA:
 }
 
 
-# Modulo Mantenimiento
+# Modulo Empleado
+
+## Crear Empleado
+POST
+http://localhost:8080/api/companyId/empleado/sucursalId
+BODY
+{
+    "apellidos": "Garcia Lopez",
+    "nombres": "Juan Carlos",
+    "dni": "98789904",
+    "fechaNacimiento": "1990-05-15",
+    "genero": "Masculino",
+    "email": "some@otra.com",
+    "telefonoPrincipal": "+51519123456",
+    "telefonoSecundario": "+51912345678",
+    "puesto": "Analista de Sistemas",
+    "areaTrabajo": "Tecnología",
+    "tipoContrato": "Tiempo Completo",
+    "fechaIngreso": "2022-01-15",
+    "salario": 45000,
+    "direccion": {
+        "calle": "Av. Lima 123",
+        "ciudad": "Lima",
+        "provincia": "Lima",
+        "codigoPostal": "15001"
+    },
+    "activo": true,
+    "estadoCivil": "Soltero"
+}
+RESPONSE 
+{
+    "message": "Empleado registrado exitosamente",
+    "empleado": {
+        "_id": "675b7a703c2e8e6476da2aea",
+        "nombres": "Luis Alberto",
+        "apellidos": "Sanchez Gomez",
+        "dni": "13314312",
+        "email": "luis@empresa.com"
+    }
+}
 
 
+## FILTRAR Todos los empleados de la empresa
+GET
+http://localhost:8080/api/:companyId/empleado/?sucursal=6759b77b86c3fc581f75f083&areaTrabajo=Tecnología
+PARAMS
+:companyId -> ID de la empresa
+QUERY PARAMS    
+sucursal -> SUCURSAL DE LA EMPRESA (opcional)
+areaTrabajo -> area de trabajo de empleado
+RESPONSE
+[ { }]-> resultado de el filtro
+
+## Obtener empleado por ID
+GET
+http://localhost:8080/api/:companyId/empleado/id
+RESPONSE
+{} -> EMP
+## Actualizar Empleado
+PUT
+http://localhost:8080/api/:companyId/empleado/id
+BODY
+{
+    "apellidos": "Ordoñez Cente",
+    "nombres": "Zosimo Nestor",
+    "dni": "98123312",
+    "fechaNacimiento": "1990-05-15",
+    "genero": "Piedra"
+
+}
+RESPONSE
+{
+    "message": "Empleado actualizado exitosamente"
+}
+
+## Eliminar empleado
+DELETE
+http://localhost:8080/api/:companyId/empleado/id
 
 
+# MODULO OPERACIONES (CORE)
+## CREAR OPERACION
+## ACTUALIZAR OPERACION
 
+## OBTENER TODAS LAS OPERACIONES DE LA EMPRESA
+### FILTRAR OPERACION POR TIPO
+###  FILTRAR OPERACION POR MAQUINA
+### FILTRAR OPERACION POR 
+## OBTENER OPERACION POR ID
+## ELIMINAR OPERACION
 
+# Modulo Operaciones
+## Crear Operación
+POST
+http://localhost:8080/api/:companyId/operaciones/:sucursalId/
 
+### Ejemplo 1: Operación de Lavado
+{
+    "fecInicio": "2024-03-20T10:00:00Z",
+    "fecFinal": "2024-03-20T18:00:00Z",
+    "currentStage": "lavado",
+    "nextStage": "secado",
+    "procesos": [{
+        "tipo": "Lavado",
+        "fecha": "2024-03-20",
+        "hora": "10:00",
+        "responsable": "675b7a703c2e8e6476da2aea",
+        "detalles": [{
+            "numOrden": "LAV-001",
+            "maquina": "675c8b92d4f3e789a0bc1234",
+            "cantPrendas": 50,
+            "etiqueta": "Ropa clara",
+            "observaciones": "Lavado delicado"
+        }]
+    }]
+}
 
+### Ejemplo 2: Operación con Múltiples Procesos
+{
+    "fecInicio": "2024-03-20T09:00:00Z",
+    "fecFinal": "2024-03-21T17:00:00Z",
+    "currentStage": "lavado",
+    "nextStage": "secado",
+    "procesos": [{
+        "tipo": "Lavado",
+        "fecha": "2024-03-20",
+        "hora": "09:30",
+        "responsable": "675b7a703c2e8e6476da2aea",
+        "detalles": [{
+            "numOrden": "LAV-002",
+            "maquina": "675c8b92d4f3e789a0bc1234",
+            "cantPrendas": 75,
+            "etiqueta": "Ropa oscura",
+            "observaciones": "Temperatura media"
+        }]
+    },
+    {
+        "tipo": "Secado",
+        "fecha": "2024-03-20",
+        "hora": "11:30",
+        "responsable": "675b7a703c2e8e6476da2aeb",
+        "detalles": [{
+            "numOrden": "SEC-002",
+            "maquina": "675c8b92d4f3e789a0bc5678",
+            "cantPrendas": 75,
+            "etiqueta": "Ropa oscura",
+            "observaciones": "Secado normal"
+        }]
+    }]
+}
 
+### Ejemplo 3: Operación Compleja
+{
+    "fecInicio": "2024-03-20T08:00:00Z",
+    "fecFinal": "2024-03-22T16:00:00Z",
+    "currentStage": "lavado",
+    "nextStage": "secado",
+    "procesos": [{
+        "tipo": "Lavado",
+        "fecha": "2024-03-20",
+        "hora": "08:15",
+        "responsable": "675b7a703c2e8e6476da2aea",
+        "detalles": [
+            {
+                "numOrden": "LAV-003A",
+                "maquina": "675c8b92d4f3e789a0bc1234",
+                "cantPrendas": 30,
+                "etiqueta": "Uniformes",
+                "observaciones": "Lavado intensivo"
+            },
+            {
+                "numOrden": "LAV-003B",
+                "maquina": "675c8b92d4f3e789a0bc1235",
+                "cantPrendas": 45,
+                "etiqueta": "Sábanas",
+                "observaciones": "Lavado estándar"
+            }
+        ]
+    }]
+}
 
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOiI2NzU3N2FjZDdkMDg0ZWU2Y2ZiODdmZjAiLCJub21icmVMZWdhbCI6InJvb3QiLCJjb21wYW55TmFtZSI6InJvb3QiLCJwbGFuIjoicm9vdCIsImVtYWlsIjoiY2xpZGVydHV0YXlhcml2ZXJhQGdtYWlsLmNvbSIsImlhdCI6MTczMzc4NjM1NywiZXhwIjoxNzMzODI5NTU3fQ.py2gQiNRuYsfxRPfdJmc73dMAYv2iJ4TLlp7ZrsEa3k
+RESPUESTA:
+{
+    "message": "Operación creada exitosamente",
+    "operacion": {
+        "_id": "675d9c12e4f5a6b7c8d9e0f1",
+        "currentStage": "lavado",
+        "nextStage": "secado"
+    }
+}
+
+## Obtener Todas las Operaciones
+GET
+http://localhost:8080/api/:companyId/operaciones/:sucursalId/
+RESPUESTA:
+[{},{}] -> Array de operaciones
+
+## Obtener Operación por ID
+GET
+http://localhost:8080/api/:companyId/operaciones/:id
+RESPUESTA:
+{} -> Objeto operación
+
+## Actualizar Operación
+PUT
+http://localhost:8080/api/:companyId/operaciones/:id
+BODY:
+{
+    "currentStage": "secado",
+    "nextStage": "planchado",
+    "estadoOperacion": true
+}
+RESPUESTA:
+{
+    "message": "Operación actualizada exitosamente"
+}
+
+## Eliminar Operación
+DELETE
+http://localhost:8080/api/:companyId/operaciones/:id
+RESPUESTA:
+{
+    "message": "Operación eliminada exitosamente"
+}
+
+## Agregar Proceso a Operación
+POST
+http://localhost:8080/api/:companyId/operaciones/:sucursalId/:operacionId/procesos
+BODY:
+{
+    "tipo": "Secado",
+    "fecha": "2024-03-20",
+    "hora": "14:30",
+    "responsable": "675b7a703c2e8e6476da2aea",
+    "detalles": [{
+        "numOrden": "SEC-001",
+        "maquina": "675c8b92d4f3e789a0bc5678",
+        "cantPrendas": 50,
+        "etiqueta": "Ropa clara",
+        "observaciones": "Secado suave"
+    }]
+}
+RESPUESTA:
+{
+    "message": "Proceso agregado exitosamente"
+}
+
+## Actualizar Etapa Actual
+PATCH
+http://localhost:8080/api/:companyId/operaciones/:id/stage
+BODY:
+{
+    "currentStage": "secado",
+    "nextStage": "planchado"
+}
+RESPUESTA:
+{
+    "message": "Etapa actualizada exitosamente"
+}
+
+## Actualizar Proceso
+PATCH
+http://localhost:8080/api/:companyId/operaciones/:operacionId/procesos/:procesoId
+BODY:
+{
+    "estado": true,
+    "observaciones": "Proceso completado satisfactoriamente"
+}
+RESPUESTA:
+{
+    "message": "Proceso actualizado exitosamente"
+}
+
+## Filtrar Procesos
+GET
+http://localhost:8080/api/:companyId/operaciones/procesos/filter?tipo=Lavado&fecha=2024-03-20
+PARÁMETROS DE CONSULTA:
+- tipo: Tipo de proceso (opcional)
+- fecha: Fecha del proceso (opcional)
+- responsable: ID del responsable (opcional)
+RESPUESTA:
+[{}, {}] -> Array de procesos filtrados
+
+## Filtrar Procesos por Número de Orden
+GET
+http://localhost:8080/api/:companyId/operaciones/procesos/by-orden?numOrden=LAV-001
+PARÁMETROS DE CONSULTA:
+- numOrden: Número de orden a buscar
+RESPUESTA:
+[{}, {}] -> Array de procesos que coinciden con el número de orden
