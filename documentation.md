@@ -1,9 +1,14 @@
 # Modulo Autenticación
+
 ## Registro
+
 ### Registro Completo (isVerified sera Falso)
-POST
-http://localhost:8080/api/auth/register
-body:
+
+**POST**  
+`http://localhost:8080/api/auth/register`
+
+**Body:**
+```json
 {
   "nombreLegal": "Lavandería Express S.A.C.",
   "companyName": "LavanderiaExpress",
@@ -18,87 +23,137 @@ body:
   "telefono": "987654321",
   "direccion": "Av. Industrial 123, Lima"
 }
-RESPUESTA:
+```
+
+**Respuesta:**
+```json
 {
     "message": "Empresa registrada exitosamente"
 }
-### Registro para verificacion de email ( solo campos estrictamente requeridos)
-POST
-http://localhost:8080/api/auth/register
-body
+```
+
+### Registro para verificación de email (solo campos estrictamente requeridos)
+
+**POST**  
+`http://localhost:8080/api/auth/register`
+
+**Body:**
+```json
 {
   "nombreLegal": "Speed Wash  SAC",
   "companyName": "speedwash",
   "companyPassword": "sw1234",
   "email": "shunshine@gmail.com"
 }
-RESPUESTA:
+```
+
+**Respuesta:**
+```json
 {
     "message": "Empresa registrada exitosamente"
 }
+```
 
-### Verificacion de Email
-#### Solicitar Codigo de Verificacion
-POST 
-http://localhost:8080/api/auth/request-verification-code
-body
+### Verificación de Email
+
+#### Solicitar Código de Verificación
+
+**POST**  
+`http://localhost:8080/api/auth/request-verification-code`
+
+**Body:**
+```json
 {
   "email": "clidertutayarivera@gmail.com"
 }
-#### Verificar Codigo
-POST 
-http://localhost:8080/api/auth/verify
-body
+```
+
+#### Verificar Código
+
+**POST**  
+`http://localhost:8080/api/auth/verify`
+
+**Body:**
+```json
 {
   "email": "clidertutayarivera@gmail.com",
   "verificationCode" : "520045"
 }
-verificationCode -> Codigo de verificacion enviado al Email
+```
+`verificationCode` -> Código de verificación enviado al Email
+
 ## Login
-POST
-http://localhost:8080/api/auth/login
-body:
+
+**POST**  
+`http://localhost:8080/api/auth/login`
+
+**Body:**
+```json
 {
     "companyName" : "LavanderiaExpress", 
     "companyPassword" : "contraseña123"
 }
-RESPUESTA:
+```
+
+**Respuesta:**
+```json
 {   
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOiI2NzU1ZGIxMjMyZjc1Mzk1MTZlM2VjNjAiLCJub21icmVMZWdhbCI6IkxhdmFuZGVyw61hIEV4cHJlc3MgUy5BLkMuIiwicnVjIjoiMjAxMjM0NTY3ODkiLCJjb21wYW55TmFtZSI6IkxhdmFuZGVyaWFFeHByZXNzIiwicGxhbiI6InByZW1pdW0iLCJsb2dvVXJsIjoiaHR0cHM6Ly9lamVtcGxvLmNvbS9sb2dvLnBuZyIsImRlc2NyaXBjaW9uIjoiU2VydmljaW8gZGUgbGF2YW5kZXLDrWEgaW5kdXN0cmlhbCBjb24gbcOhcyBkZSAxMCBhw7FvcyBkZSBleHBlcmllbmNpYSIsInRlbGVmb25vIjoiOTg3NjU0MzIxIiwiZW1haWwiOiJjb250YWN0b0BsYXZhbmRlcmlhZXhwcmVzcy5jb20iLCJkaXJlY2Npb24iOiJBdi4gSW5kdXN0cmlhbCAxMjMsIExpbWEiLCJpYXQiOjE3MzM2ODA2NDcsImV4cCI6MTczMzcyMzg0N30.w6elUiUjhhPUQdeaj7bQZKhK5rlbHTS9um3KZZvUT0s"
 }
+```
 
 ### Contraseña Olvidada
+
 #### Restaurar Contraseña
-* Previo envio de codigo de restauracion en email
-POST 
-http://localhost:8080/api/auth//forget-password
-body
+
+* Previo envío de código de restauración en email
+
+**POST**  
+`http://localhost:8080/api/auth/forget-password`
+
+**Body:**
+```json
 {
     "email": "clidertutayarivera@gmail.com",
-    "verificationCode". "988712", 
+    "verificationCode": "988712", 
     "newPassword": "minuevacontraseña"
- }
-RESPUESTA:
-{ message: 'Se Restablecio la contraseña, Vuelva a Iniciar Session' };
+}
+```
+
+**Respuesta:**
+```json
+{ "message": "Se Restablecio la contraseña, Vuelva a Iniciar Session" }
+```
 
 # Modulo Empresa
+
 ## Obtener todas las empresas
-GET
-http://localhost:8080/api/company/
-RESPUESTA:
+
+**GET**  
+`http://localhost:8080/api/company/`
+
+**Respuesta:**
+```json
 [{},{}] -> Array de empresas
+```
 
+## Obtener empresa por ID
 
-## Obtener empresa por ID   
-GET
-http://localhost:8080/api/company/:id
-RESPUESTA:
+**GET**  
+`http://localhost:8080/api/company/:id`
+
+**Respuesta:**
+```json
 {} -> Empresa
+```
 
 ## Actualizar empresa
-PUT
-http://localhost:8080/api/company/:id
-body:
+
+**PUT**  
+`http://localhost:8080/api/company/:id`
+
+**Body:**
+```json
 {
   "nombreLegal": "Lavandería Express S.A.C.",
   "ruc": "20123456789",
@@ -113,50 +168,79 @@ body:
   "email": "contacto@express.com",
   "direccion": "Av. Industrial 123, Lima"
 }
-parametros:
-id: 64a5f2d37e2517e6c45a1234
-RESPUESTA:
+```
+
+**Parámetros:**
+- `id`: 64a5f2d37e2517e6c45a1234
+
+**Respuesta:**
+```json
 {} -> Empresa
+```
 
 ## Eliminar empresa
-DELETE
-http://localhost:8080/api/company/:id
-parametros:
-id: 64a5f2d37e2517e6c45a1234
-RESPUESTA:
+
+**DELETE**  
+`http://localhost:8080/api/company/:id`
+
+**Parámetros:**
+- `id`: 64a5f2d37e2517e6c45a1234
+
+**Respuesta:**
+```json
 {
     "message": "Empresa Elimiada exitosamente"
 }
+```
 
 ## Cambiar Contraseña Empresa
-POST
-http://localhost:8080/api/company/:companyId/change-password
-BODY
+
+**POST**  
+`http://localhost:8080/api/company/:companyId/change-password`
+
+**Body:**
+```json
 {
     "companyPassword" : "root12", 
     "newPassword" : "123456"
 }
-RESPONSE
+```
+
+**Respuesta:**
+```json
 {
     "message": "Contraseña cambiada exitosamente"
 }
+```
 
 ## Validar Contraseña de Empresa
-POST http://localhost:8080/api/company/6756e09183b64ad9c902c08c/validate-password
-BODY
+
+**POST**  
+`http://localhost:8080/api/company/6756e09183b64ad9c902c08c/validate-password`
+
+**Body:**
+```json
 {
     "attempPassword" : "123456"
 }
-RESPONSE
+```
+
+**Respuesta:**
+```json
 {
     "message": "Contraseña Correcta"
 }
+```
 
 # Modulo Sucursal
+
 ## Crear Sucursal
-POST
-http://localhost:8080/api/:companyId/sucursales
-body:
+
+**POST**  
+`http://localhost:8080/api/:companyId/sucursales`
+
+**Body:**
+```json
 {
     "nombreSucursal": "Sede Central Lima",
     "direccion": "Av. Javier Prado 1234, San Isidro",
@@ -179,59 +263,88 @@ body:
         "email": "juan.perez@lavanderiaexpress.com"
     }
 }
-RESPUESTA:
+```
+
+**Respuesta:**
+```json
 {
     "message": "Sucursal registrada exitosamente"
 }
+```
 
 ## Obtener todas las sucursales
-GET
-http://localhost:8080/api/:companyId/sucursales/
-RESPUESTA:
+
+**GET**  
+`http://localhost:8080/api/:companyId/sucursales/`
+
+**Respuesta:**
+```json
 [{},{}] -> Array de sucursales
-PARAMETROS
-:companyId -> el id de la empresa
+```
+
+**Parámetros:**
+- `:companyId` -> el id de la empresa
 
 ## Obtener sucursal por ID
-GET
-http://localhost:8080/api/:companyId/sucursales/:id
-RESPUESTA:
+
+**GET**  
+`http://localhost:8080/api/:companyId/sucursales/:id`
+
+**Respuesta:**
+```json
 {} -> Sucursal  
-PARAMETROS:
-:companyId -> ID de la empresa
-:id  -> ID de la sucursal
+```
+
+**Parámetros:**
+- `:companyId` -> ID de la empresa
+- `:id`  -> ID de la sucursal
 
 ## Actualizar sucursal
-PUT
-http://localhost:8080/api/:companyId/sucursales/:id
-body:
+
+**PUT**  
+`http://localhost:8080/api/:companyId/sucursales/:id`
+
+**Body:**
+```json
 {} -> Sucursal con los datos a actualizar
-PARAMETROS:
-:companyId -> ID de la empresa
-id:  -> ID de la sucursal
-RESPUESTA:
+```
+
+**Parámetros:**
+- `:companyId` -> ID de la empresa
+- `:id`  -> ID de la sucursal
+
+**Respuesta:**
+```json
 {
-  message: "Sucursal actualizada exitosamente"
+  "message": "Sucursal actualizada exitosamente"
 }
+```
 
 ## Eliminar sucursal
-DELETE
-http://localhost:8080/api/:companyId/sucursales/:id
-PARAMETROS:
-:id -> ID de la sucursal
-:companyId -> ID de la empresa
-RESPUESTA:
+
+**DELETE**  
+`http://localhost:8080/api/:companyId/sucursales/:id`
+
+**Parámetros:**
+- `:id` -> ID de la sucursal
+- `:companyId` -> ID de la empresa
+
+**Respuesta:**
+```json
 {
-  message: "Sucursal eliminada exitosamente"
+  "message": "Sucursal eliminada exitosamente"
 }
-
-
+```
 
 # Modulo Maquina
+
 ## Crear Maquina
-POST
-http://localhost:8080/api/:companyId/maquinas/:sucursalId/
-body:
+
+**POST**  
+`http://localhost:8080/api/:companyId/maquinas/:sucursalId/`
+
+**Body:**
+```json
 {
     "tipo": "Secadora",
     "modelo": "Secadora",
@@ -255,103 +368,151 @@ body:
         "tecnico": "Juan Pérez"
     },
     "proximoMantenimiento": "2023-12-20",
-    "horasUso": 2500,
+    "horasUso": 2500
 }
-PARAMETROS:
-:companyId -> ID de la empresa
-:sucursalId -> ID de la sucursal
+```
 
-RESPUESTA:
+**Parámetros:**
+- `:companyId` -> ID de la empresa
+- `:sucursalId` -> ID de la sucursal
+
+**Respuesta:**
+```json
 {
     "message": "Maquina registrada exitosamente"
 }
+```
 
 ## Obtener todas las maquinas de una empresa
-GET
-http://localhost:8080/api/:companyId/maquinas
-PARAMETROS:
-companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
-RESPUESTA:
+
+**GET**  
+`http://localhost:8080/api/:companyId/maquinas`
+
+**Parámetros:**
+- `companyId`: 6755fb8457ffc88c52f7b277 -> ID de la empresa
+
+**Respuesta:**
+```json
 [{},{}] -> Array de maquinas de la empresa
+```
 
+## Filtrar maquinas por Tipo
 
-## Filtar maquinas por Tipo
-GET
-http://localhost:8080/api/:companyId/maquinas?tipo=Lavadora
-PARAMETROS:
-companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
-tipo: Secadora | Lavadora | Planchadora -> Tipo de maquina
-RESPUESTA:
+**GET**  
+`http://localhost:8080/api/:companyId/maquinas?tipo=Lavadora`
+
+**Parámetros:**
+- `companyId`: 6755fb8457ffc88c52f7b277 -> ID de la empresa
+- `tipo`: Secadora | Lavadora | Planchadora -> Tipo de maquina
+
+**Respuesta:**
+```json
 {} -> Maquina filtradas por tipo de la empresa
+```
 
-## Filtar maquinas por Sucursal
-GET
-http://localhost:8080/api/6755fb8457ffc88c52f7b277/maquinas?sucursal=67561bff59f74bee5fbcfc26
-PARAMETROS:
-companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
-sucursal: 67561bff59f74bee5fbcfc26 -> ID de la sucursal
-RESPUESTA:
+## Filtrar maquinas por Sucursal
+
+**GET**  
+`http://localhost:8080/api/6755fb8457ffc88c52f7b277/maquinas?sucursal=67561bff59f74bee5fbcfc26`
+
+**Parámetros:**
+- `companyId`: 6755fb8457ffc88c52f7b277 -> ID de la empresa
+- `sucursal`: 67561bff59f74bee5fbcfc26 -> ID de la sucursal
+
+**Respuesta:**
+```json
 {} -> Maquinas filtradas por sucursal de la empresa
+```
 
 ## Filtrar maquinas por Tipo y Sucursal
-GET
-http://localhost:8080/api/:companyId/maquinas?tipo=Lavadora&sucursal=ID
-PARAMETROS:
-companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
-tipo: Secadora | Lavadora | Planchadora -> Tipo de maquina
-sucursal: 67561bff59f74bee5fbcfc26 -> ID de la sucursal
-RESPUESTA:
-{} -> Maquinas filtradas por tipo y sucursal de la empresa
 
-## Obtener maquinas por codigo de fabrica
-GET
-http://localhost:8080/api/:companyId/maquinas/codigo/:codigoFabrica
-PARAMETROS:
-companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
-codigoFabrica: HAAS-FR2000-0123 -> Codigo de fabrica de la maquina
-RESPUESTA:
+**GET**  
+`http://localhost:8080/api/:companyId/maquinas?tipo=Lavadora&sucursal=ID`
+
+**Parámetros:**
+- `companyId`: 6755fb8457ffc88c52f7b277 -> ID de la empresa
+- `tipo`: Secadora | Lavadora | Planchadora -> Tipo de maquina
+- `sucursal`: 67561bff59f74bee5fbcfc26 -> ID de la sucursal
+
+**Respuesta:**
+```json
+{} -> Maquinas filtradas por tipo y sucursal de la empresa
+```
+
+## Obtener maquinas por código de fabrica
+
+**GET**  
+`http://localhost:8080/api/:companyId/maquinas/codigo/:codigoFabrica`
+
+**Parámetros:**
+- `companyId`: 6755fb8457ffc88c52f7b277 -> ID de la empresa
+- `codigoFabrica`: HAAS-FR2000-0123 -> Código de fabrica de la maquina
+
+**Respuesta:**
+```json
 {} -> Maquina
+```
 
 ## Obtener maquinas por ID
-GET
-http://localhost:8080/api/:companyId/maquinas/:id
-PARAMETROS:
-companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
-id: 6755fb8457ffc88c52f7b277 -> ID de la maquina
-RESPUESTA:
+
+**GET**  
+`http://localhost:8080/api/:companyId/maquinas/:id`
+
+**Parámetros:**
+- `companyId`: 6755fb8457ffc88c52f7b277 -> ID de la empresa
+- `id`: 6755fb8457ffc88c52f7b277 -> ID de la maquina
+
+**Respuesta:**
+```json
 {} -> Maquina
+```
 
 ## Actualizar maquina
-PUT
-http://localhost:8080/api/:companyId/maquinas/:id
-body:
+
+**PUT**  
+`http://localhost:8080/api/:companyId/maquinas/:id`
+
+**Body:**
+```json
 {}
-PARAMETROS:
-companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
-id: 6755fb8457ffc88c52f7b277 -> ID de la maquina
-RESPUESTA:
+```
+
+**Parámetros:**
+- `companyId`: 6755fb8457ffc88c52f7b277 -> ID de la empresa
+- `id`: 6755fb8457ffc88c52f7b277 -> ID de la maquina
+
+**Respuesta:**
+```json
 {
     "message": "Maquina actualizada exitosamente"
 }
+```
 
 ## Eliminar maquina
-DELETE
-http://localhost:8080/api/:companyId/maquinas/:id
-PARAMETROS:
-companyId: 6755fb8457ffc88c52f7b277 -> ID de la empresa
-id: 6755fb8457ffc88c52f7b277 -> ID de la maquina
-RESPUESTA:
+
+**DELETE**  
+`http://localhost:8080/api/:companyId/maquinas/:id`
+
+**Parámetros:**
+- `companyId`: 6755fb8457ffc88c52f7b277 -> ID de la empresa
+- `id`: 6755fb8457ffc88c52f7b277 -> ID de la maquina
+
+**Respuesta:**
+```json
 {
     "message": "Maquina eliminada exitosamente"
 }
-
+```
 
 # Modulo Empleado
 
 ## Crear Empleado
-POST
-http://localhost:8080/api/companyId/empleado/sucursalId
-BODY
+
+**POST**  
+`http://localhost:8080/api/companyId/empleado/sucursalId`
+
+**Body:**
+```json
 {
     "apellidos": "Garcia Lopez",
     "nombres": "Juan Carlos",
@@ -375,7 +536,10 @@ BODY
     "activo": true,
     "estadoCivil": "Soltero"
 }
-RESPONSE 
+```
+
+**Respuesta:**
+```json
 {
     "message": "Empleado registrado exitosamente",
     "empleado": {
@@ -386,63 +550,72 @@ RESPONSE
         "email": "luis@empresa.com"
     }
 }
+```
 
+## Filtrar Todos los empleados de la empresa
 
-## FILTRAR Todos los empleados de la empresa
-GET
-http://localhost:8080/api/:companyId/empleado/?sucursal=6759b77b86c3fc581f75f083&areaTrabajo=Tecnología
-PARAMS
-:companyId -> ID de la empresa
-QUERY PARAMS    
-sucursal -> SUCURSAL DE LA EMPRESA (opcional)
-areaTrabajo -> area de trabajo de empleado
-RESPONSE
+**GET**  
+`http://localhost:8080/api/:companyId/empleado/?sucursal=6759b77b86c3fc581f75f083&areaTrabajo=Tecnología`
+
+**Parámetros:**
+- `:companyId` -> ID de la empresa
+
+**Query Params:**
+- `sucursal` -> SUCURSAL DE LA EMPRESA (opcional)
+- `areaTrabajo` -> área de trabajo de empleado
+
+**Respuesta:**
+```json
 [ { }]-> resultado de el filtro
+```
 
 ## Obtener empleado por ID
-GET
-http://localhost:8080/api/:companyId/empleado/id
-RESPONSE
+
+**GET**  
+`http://localhost:8080/api/:companyId/empleado/id`
+
+**Respuesta:**
+```json
 {} -> EMP
+```
+
 ## Actualizar Empleado
-PUT
-http://localhost:8080/api/:companyId/empleado/id
-BODY
+
+**PUT**  
+`http://localhost:8080/api/:companyId/empleado/id`
+
+**Body:**
+```json
 {
     "apellidos": "Ordoñez Cente",
     "nombres": "Zosimo Nestor",
     "dni": "98123312",
     "fechaNacimiento": "1990-05-15",
     "genero": "Piedra"
-
 }
-RESPONSE
+```
+
+**Respuesta:**
+```json
 {
     "message": "Empleado actualizado exitosamente"
 }
+```
 
 ## Eliminar empleado
-DELETE
-http://localhost:8080/api/:companyId/empleado/id
 
+**DELETE**  
+`http://localhost:8080/api/:companyId/empleado/id`
 
 # MODULO OPERACIONES (CORE)
-## CREAR OPERACION
-## ACTUALIZAR OPERACION
 
-## OBTENER TODAS LAS OPERACIONES DE LA EMPRESA
-### FILTRAR OPERACION POR TIPO
-###  FILTRAR OPERACION POR MAQUINA
-### FILTRAR OPERACION POR 
-## OBTENER OPERACION POR ID
-## ELIMINAR OPERACION
-
-# Modulo Operaciones
 ## Crear Operación
-POST
-http://localhost:8080/api/:companyId/operaciones/:sucursalId/
+
+**POST**  
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId/`
 
 ### Ejemplo 1: Operación de Lavado
+```json
 {
     "fecInicio": "2024-03-20T10:00:00Z",
     "fecFinal": "2024-03-20T18:00:00Z",
@@ -462,8 +635,10 @@ http://localhost:8080/api/:companyId/operaciones/:sucursalId/
         }]
     }]
 }
+```
 
 ### Ejemplo 2: Operación con Múltiples Procesos
+```json
 {
     "fecInicio": "2024-03-20T09:00:00Z",
     "fecFinal": "2024-03-21T17:00:00Z",
@@ -496,8 +671,10 @@ http://localhost:8080/api/:companyId/operaciones/:sucursalId/
         }]
     }]
 }
+```
 
 ### Ejemplo 3: Operación Compleja
+```json
 {
     "fecInicio": "2024-03-20T08:00:00Z",
     "fecFinal": "2024-03-22T16:00:00Z",
@@ -526,8 +703,10 @@ http://localhost:8080/api/:companyId/operaciones/:sucursalId/
         ]
     }]
 }
+```
 
-RESPUESTA:
+**Respuesta:**
+```json
 {
     "message": "Operación creada exitosamente",
     "operacion": {
@@ -536,45 +715,68 @@ RESPUESTA:
         "nextStage": "secado"
     }
 }
+```
 
 ## Obtener Todas las Operaciones
-GET
-http://localhost:8080/api/:companyId/operaciones/:sucursalId/
-RESPUESTA:
+
+**GET**  
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId/`
+
+**Respuesta:**
+```json
 [{},{}] -> Array de operaciones
+```
 
 ## Obtener Operación por ID
-GET
-http://localhost:8080/api/:companyId/operaciones/:id
-RESPUESTA:
+
+**GET**  
+`http://localhost:8080/api/:companyId/operaciones/:id`
+
+**Respuesta:**
+```json
 {} -> Objeto operación
+```
 
 ## Actualizar Operación
-PUT
-http://localhost:8080/api/:companyId/operaciones/:id
-BODY:
+
+**PUT**  
+`http://localhost:8080/api/:companyId/operaciones/:id`
+
+**Body:**
+```json
 {
     "currentStage": "secado",
     "nextStage": "planchado",
     "estadoOperacion": true
 }
-RESPUESTA:
+```
+
+**Respuesta:**
+```json
 {
     "message": "Operación actualizada exitosamente"
 }
+```
 
 ## Eliminar Operación
-DELETE
-http://localhost:8080/api/:companyId/operaciones/:id
-RESPUESTA:
+
+**DELETE**  
+`http://localhost:8080/api/:companyId/operaciones/:id`
+
+**Respuesta:**
+```json
 {
     "message": "Operación eliminada exitosamente"
 }
+```
 
 ## Agregar Proceso a Operación
-POST
-http://localhost:8080/api/:companyId/operaciones/:sucursalId/:operacionId/procesos
-BODY:
+
+**POST**  
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId/:operacionId/procesos`
+
+**Body:**
+```json
 {
     "tipo": "Secado",
     "fecha": "2024-03-20",
@@ -588,51 +790,79 @@ BODY:
         "observaciones": "Secado suave"
     }]
 }
-RESPUESTA:
+```
+
+**Respuesta:**
+```json
 {
     "message": "Proceso agregado exitosamente"
 }
+```
 
 ## Actualizar Etapa Actual
-PATCH
-http://localhost:8080/api/:companyId/operaciones/:id/stage
-BODY:
+
+**PATCH**  
+`http://localhost:8080/api/:companyId/operaciones/:id/stage`
+
+**Body:**
+```json
 {
     "currentStage": "secado",
     "nextStage": "planchado"
 }
-RESPUESTA:
+```
+
+**Respuesta:**
+```json
 {
     "message": "Etapa actualizada exitosamente"
 }
+```
 
 ## Actualizar Proceso
-PATCH
-http://localhost:8080/api/:companyId/operaciones/:operacionId/procesos/:procesoId
-BODY:
+
+**PATCH**  
+`http://localhost:8080/api/:companyId/operaciones/:operacionId/procesos/:procesoId`
+
+**Body:**
+```json
 {
     "estado": true,
     "observaciones": "Proceso completado satisfactoriamente"
 }
-RESPUESTA:
+```
+
+**Respuesta:**
+```json
 {
     "message": "Proceso actualizado exitosamente"
 }
+```
 
 ## Filtrar Procesos
-GET
-http://localhost:8080/api/:companyId/operaciones/procesos/filter?tipo=Lavado&fecha=2024-03-20
-PARÁMETROS DE CONSULTA:
-- tipo: Tipo de proceso (opcional)
-- fecha: Fecha del proceso (opcional)
-- responsable: ID del responsable (opcional)
-RESPUESTA:
+
+**GET**  
+`http://localhost:8080/api/:companyId/operaciones/procesos/filter?tipo=Lavado&fecha=2024-03-20`
+
+**Parámetros de Consulta:**
+- `tipo`: Tipo de proceso (opcional)
+- `fecha`: Fecha del proceso (opcional)
+- `responsable`: ID del responsable (opcional)
+
+**Respuesta:**
+```json
 [{}, {}] -> Array de procesos filtrados
+```
 
 ## Filtrar Procesos por Número de Orden
-GET
-http://localhost:8080/api/:companyId/operaciones/procesos/by-orden?numOrden=LAV-001
-PARÁMETROS DE CONSULTA:
-- numOrden: Número de orden a buscar
-RESPUESTA:
+
+**GET**  
+`http://localhost:8080/api/:companyId/operaciones/procesos/by-orden?numOrden=LAV-001`
+
+**Parámetros de Consulta:**
+- `numOrden`: Número de orden a buscar
+
+**Respuesta:**
+```json
 [{}, {}] -> Array de procesos que coinciden con el número de orden
+```

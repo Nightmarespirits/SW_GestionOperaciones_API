@@ -1,9 +1,10 @@
 // reportGenerator.js
 import ExcelJS from 'exceljs';
+import mongoose from 'mongoose';
 import OperacionModel from './models/OperacionModel.js';
 import EmpleadoModel from './models/EmpleadoModel.js';
 
-export async function generateOperationsReport(startDate, endDate) {
+export async function generateOperationsReport(companyId, startDate, endDate) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Reporte de Operaciones');
 
@@ -24,6 +25,7 @@ export async function generateOperationsReport(startDate, endDate) {
     const operaciones = await OperacionModel.aggregate([
         {
             $match: {
+                company: mongoose.Types.ObjectId(companyId),
                 fecInicio: {
                     $gte: startDate,
                     $lte: endDate
@@ -55,8 +57,8 @@ export async function generateOperationsReport(startDate, endDate) {
                     numOrden: detalle.numOrden,
                     tipoProceso: proceso.tipo,
                     responsable: empleado ? `${empleado.nombres} ${empleado.apellidos}` : 'No asignado',
-                    cantidad: detalle.cantidad,
-                    observaciones: detalle.obs || ''
+                    cantidad: detalle.cantPrendas,
+                    observaciones: detalle.observaciones || ''
                 });
             }
         }
