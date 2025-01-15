@@ -607,7 +607,14 @@
 **DELETE**  
 `http://localhost:8080/api/:companyId/empleado/id`
 
-# MODULO OPERACIONES (CORE)
+**Respuesta:**
+```json
+{
+    "message": "Empleado eliminado exitosamente"
+}
+```
+
+# Modulo Operaciones (CORE)
 
 ## Crear Operación
 
@@ -720,27 +727,125 @@
 ## Obtener Todas las Operaciones
 
 **GET**  
-`http://localhost:8080/api/:companyId/operaciones/:sucursalId/`
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId`
 
 **Respuesta:**
 ```json
-[{},{}] -> Array de operaciones
+{
+    "success": true,
+    "data": {
+        "operaciones": [
+            
+        ],
+        "total": 2,
+        "page": 1,
+        "limit": 10
+    }
+}
 ```
+**Parametros Filtro (Opcional, filtro basado en propiedades del Modelo)**
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId/?estadoOperacion=true`
+estadoOperacion -> true o false, filtra de acuerdo a esa propiedad las operaciones
+
+**Parametros Paginacion(Opcional)**
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId/?page=1&limit=1`
+Paginacion Agregada
+page -> Pagina Actual
+limit -> Limite por pagina
+
 
 ## Obtener Operación por ID
 
 **GET**  
-`http://localhost:8080/api/:companyId/operaciones/:id`
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId/:id`
 
 **Respuesta:**
 ```json
-{} -> Objeto operación
+{
+    "success": true,
+    "data": {
+        "_id": "67872a73a840b674d6dce739",
+        "company": {
+            "_id": "677d27370ed9325d9e4a33c7",
+            "nombreLegal": "root",
+            "companyName": "root",
+            "companyPassword": "$2a$10$KPhv4xfoQY5udPiTsOd7EeUzUrC3E6uwQNznjj1KtSMEALxz3tBLm",
+            "email": "root@gmail.com",
+            "plan": "root",
+            "sucursales": [],
+            "estado": true,
+            "isVerified": false,
+            "createdAt": "2025-01-07T13:08:07.541Z",
+            "updatedAt": "2025-01-07T13:08:07.541Z",
+            "__v": 0
+        },
+        "sucursal": {
+            "horarioAtencion": {
+                "apertura": "08:00",
+                "cierre": "20:00"
+            },
+            "ubicacionGPS": {
+                "latitude": -12.0864,
+                "longitude": -77.0348
+            },
+            "encargado": {
+                "nombre": "Juan Pérez",
+                "telefono": "+51 999888777",
+                "email": "juan.perez@lavanderiaexpress.com"
+            },
+            "_id": "6786aa52abdf96d3b6322316",
+            "company": "677d27370ed9325d9e4a33c7",
+            "nombreSucursal": "Sucursal secundaria",
+            "direccion": "Av. Javier Prado 1234, San Isidro",
+            "telefono": "+51 987654321",
+            "email": "sede.central@lavanderiaexpress.com",
+            "estado": true,
+            "capacidadMaxima": 100,
+            "maquinas": [
+                "64a5f2d37e2517e6c45a1234",
+                "64a5f2d37e2517e6c45a5678"
+            ],
+            "createdAt": "2025-01-14T18:17:54.772Z",
+            "updatedAt": "2025-01-14T18:17:54.772Z",
+            "__v": 0
+        },
+        "fecInicio": "2024-03-20T10:00:00.000Z",
+        "fecFinal": "2024-03-20T18:00:00.000Z",
+        "estadoOperacion": false,
+        "currentStage": "lavado",
+        "nextStage": "secado",
+        "procesos": [
+            {
+                "tipo": "Lavado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "10:00",
+                "responsable": null,
+                "detalles": [
+                    {
+                        "numOrden": "LAV-001",
+                        "maquina": null,
+                        "cantPrendas": 50,
+                        "etiqueta": "Ropa clara",
+                        "observaciones": "Lavado delicado"
+                    }
+                ],
+                "estado": false,
+                "_id": "67872a73a840b674d6dce73a",
+                "createdAt": "2025-01-15T03:24:35.666Z",
+                "updatedAt": "2025-01-15T03:24:35.666Z"
+            }
+        ],
+        "createdAt": "2025-01-15T03:24:35.667Z",
+        "updatedAt": "2025-01-15T03:24:35.667Z",
+        "__v": 0
+    }
+}
 ```
 
 ## Actualizar Operación
 
 **PUT**  
-`http://localhost:8080/api/:companyId/operaciones/:id`
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId/:id`
 
 **Body:**
 ```json
@@ -754,7 +859,61 @@
 **Respuesta:**
 ```json
 {
-    "message": "Operación actualizada exitosamente"
+    "success": true,
+    "message": "Operación actualizada exitosamente",
+    "data": {
+        "_id": "67872bc0a3c92668a1055548",
+        "company": "677d27370ed9325d9e4a33c7",
+        "sucursal": "6786aa52abdf96d3b6322316",
+        "fecInicio": "2024-03-20T09:00:00.000Z",
+        "fecFinal": "2024-03-21T17:00:00.000Z",
+        "estadoOperacion": true,
+        "currentStage": "secado",
+        "nextStage": "planchado",
+        "procesos": [
+            {
+                "tipo": "Lavado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "09:30",
+                "responsable": "675b7a703c2e8e6476da2aea",
+                "detalles": [
+                    {
+                        "numOrden": "LAV-002",
+                        "maquina": "675c8b92d4f3e789a0bc1234",
+                        "cantPrendas": 75,
+                        "etiqueta": "Ropa oscura",
+                        "observaciones": "Temperatura media"
+                    }
+                ],
+                "estado": false,
+                "_id": "67872bc0a3c92668a1055549",
+                "createdAt": "2025-01-15T03:30:08.738Z",
+                "updatedAt": "2025-01-15T03:30:08.738Z"
+            },
+            {
+                "tipo": "Secado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "11:30",
+                "responsable": "675b7a703c2e8e6476da2aeb",
+                "detalles": [
+                    {
+                        "numOrden": "SEC-002",
+                        "maquina": "675c8b92d4f3e789a0bc5678",
+                        "cantPrendas": 75,
+                        "etiqueta": "Ropa oscura",
+                        "observaciones": "Secado normal"
+                    }
+                ],
+                "estado": false,
+                "_id": "67872bc0a3c92668a105554a",
+                "createdAt": "2025-01-15T03:30:08.740Z",
+                "updatedAt": "2025-01-15T03:30:08.740Z"
+            }
+        ],
+        "createdAt": "2025-01-15T03:30:08.742Z",
+        "updatedAt": "2025-01-15T04:55:25.087Z",
+        "__v": 0
+    }
 }
 ```
 
@@ -766,7 +925,42 @@
 **Respuesta:**
 ```json
 {
-    "message": "Operación eliminada exitosamente"
+    "success": true,
+    "message": "Operación eliminada exitosamente",
+    "data": {
+        "_id": "67872a73a840b674d6dce739",
+        "company": "677d27370ed9325d9e4a33c7",
+        "sucursal": "6786aa52abdf96d3b6322316",
+        "fecInicio": "2024-03-20T10:00:00.000Z",
+        "fecFinal": "2024-03-20T18:00:00.000Z",
+        "estadoOperacion": true,
+        "currentStage": "lavado",
+        "nextStage": "secado",
+        "procesos": [
+            {
+                "tipo": "Lavado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "10:00",
+                "responsable": "675b7a703c2e8e6476da2aea",
+                "detalles": [
+                    {
+                        "numOrden": "LAV-001",
+                        "maquina": "675c8b92d4f3e789a0bc1234",
+                        "cantPrendas": 50,
+                        "etiqueta": "Ropa clara",
+                        "observaciones": "Lavado delicado"
+                    }
+                ],
+                "estado": false,
+                "_id": "67872a73a840b674d6dce73a",
+                "createdAt": "2025-01-15T03:24:35.666Z",
+                "updatedAt": "2025-01-15T03:24:35.666Z"
+            }
+        ],
+        "createdAt": "2025-01-15T03:24:35.667Z",
+        "updatedAt": "2025-01-15T04:49:58.579Z",
+        "__v": 0
+    }
 }
 ```
 
@@ -795,14 +989,87 @@
 **Respuesta:**
 ```json
 {
-    "message": "Proceso agregado exitosamente"
+    "success": true,
+    "message": "Proceso agregado exitosamente",
+    "data": {
+        "_id": "67872bc0a3c92668a1055548",
+        "company": "677d27370ed9325d9e4a33c7",
+        "sucursal": "6786aa52abdf96d3b6322316",
+        "fecInicio": "2024-03-20T09:00:00.000Z",
+        "fecFinal": "2024-03-21T17:00:00.000Z",
+        "estadoOperacion": true,
+        "currentStage": "secado",
+        "nextStage": "planchado",
+        "procesos": [
+            {
+                "tipo": "Lavado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "09:30",
+                "responsable": "675b7a703c2e8e6476da2aea",
+                "detalles": [
+                    {
+                        "numOrden": "LAV-002",
+                        "maquina": "675c8b92d4f3e789a0bc1234",
+                        "cantPrendas": 75,
+                        "etiqueta": "Ropa oscura",
+                        "observaciones": "Temperatura media"
+                    }
+                ],
+                "estado": false,
+                "_id": "67872bc0a3c92668a1055549",
+                "createdAt": "2025-01-15T03:30:08.738Z",
+                "updatedAt": "2025-01-15T03:30:08.738Z"
+            },
+            {
+                "tipo": "Secado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "11:30",
+                "responsable": "675b7a703c2e8e6476da2aeb",
+                "detalles": [
+                    {
+                        "numOrden": "SEC-002",
+                        "maquina": "675c8b92d4f3e789a0bc5678",
+                        "cantPrendas": 75,
+                        "etiqueta": "Ropa oscura",
+                        "observaciones": "Secado normal"
+                    }
+                ],
+                "estado": false,
+                "_id": "67872bc0a3c92668a105554a",
+                "createdAt": "2025-01-15T03:30:08.740Z",
+                "updatedAt": "2025-01-15T03:30:08.740Z"
+            },
+            {
+                "tipo": "Doblado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "14:30",
+                "responsable": "675b7a703c2e8e6476da2aea",
+                "detalles": [
+                    {
+                        "numOrden": "SEC-001",
+                        "maquina": "675c8b92d4f3e789a0bc5678",
+                        "cantPrendas": 50,
+                        "etiqueta": "Ropa Oscura",
+                        "observaciones": "Nuevo Proceso de Doblado agregado"
+                    }
+                ],
+                "estado": false,
+                "_id": "678741250aeac7616747d0c3",
+                "createdAt": "2025-01-15T05:01:25.733Z",
+                "updatedAt": "2025-01-15T05:01:25.733Z"
+            }
+        ],
+        "createdAt": "2025-01-15T03:30:08.742Z",
+        "updatedAt": "2025-01-15T05:01:25.734Z",
+        "__v": 1
+    }
 }
 ```
 
 ## Actualizar Etapa Actual
 
 **PATCH**  
-`http://localhost:8080/api/:companyId/operaciones/:id/stage`
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId/:id/stage`
 
 **Body:**
 ```json
@@ -815,27 +1082,172 @@
 **Respuesta:**
 ```json
 {
-    "message": "Etapa actualizada exitosamente"
+    "success": true,
+    "message": "Etapa actualizada exitosamente",
+    "data": {
+        "_id": "67872bc0a3c92668a1055548",
+        "company": "677d27370ed9325d9e4a33c7",
+        "sucursal": "6786aa52abdf96d3b6322316",
+        "fecInicio": "2024-03-20T09:00:00.000Z",
+        "fecFinal": "2024-03-21T17:00:00.000Z",
+        "estadoOperacion": true,
+        "currentStage": "doblado",
+        "nextStage": "planchado",
+        "procesos": [
+            {
+                "tipo": "Lavado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "09:30",
+                "responsable": "675b7a703c2e8e6476da2aea",
+                "detalles": [
+                    {
+                        "numOrden": "LAV-002",
+                        "maquina": "675c8b92d4f3e789a0bc1234",
+                        "cantPrendas": 75,
+                        "etiqueta": "Ropa oscura",
+                        "observaciones": "Temperatura media"
+                    }
+                ],
+                "estado": false,
+                "_id": "67872bc0a3c92668a1055549",
+                "createdAt": "2025-01-15T03:30:08.738Z",
+                "updatedAt": "2025-01-15T03:30:08.738Z"
+            },
+            {
+                "tipo": "Secado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "11:30",
+                "responsable": "675b7a703c2e8e6476da2aeb",
+                "detalles": [
+                    {
+                        "numOrden": "SEC-002",
+                        "maquina": "675c8b92d4f3e789a0bc5678",
+                        "cantPrendas": 75,
+                        "etiqueta": "Ropa oscura",
+                        "observaciones": "Secado normal"
+                    }
+                ],
+                "estado": false,
+                "_id": "67872bc0a3c92668a105554a",
+                "createdAt": "2025-01-15T03:30:08.740Z",
+                "updatedAt": "2025-01-15T03:30:08.740Z"
+            },
+            {
+                "tipo": "Doblado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "14:30",
+                "responsable": "675b7a703c2e8e6476da2aea",
+                "detalles": [
+                    {
+                        "numOrden": "SEC-001",
+                        "maquina": "675c8b92d4f3e789a0bc5678",
+                        "cantPrendas": 50,
+                        "etiqueta": "Ropa Oscura",
+                        "observaciones": "Nuevo Proceso de Doblado agregado"
+                    }
+                ],
+                "estado": false,
+                "_id": "678741250aeac7616747d0c3",
+                "createdAt": "2025-01-15T05:01:25.733Z",
+                "updatedAt": "2025-01-15T05:01:25.733Z"
+            }
+        ],
+        "createdAt": "2025-01-15T03:30:08.742Z",
+        "updatedAt": "2025-01-15T05:06:18.116Z",
+        "__v": 1
+    }
 }
 ```
 
 ## Actualizar Proceso
 
 **PATCH**  
-`http://localhost:8080/api/:companyId/operaciones/:operacionId/procesos/:procesoId`
+`http://localhost:8080/api/:companyId/operaciones/:sucursalId/:operacionId/procesos/:procesoId`
 
 **Body:**
 ```json
 {
-    "estado": true,
-    "observaciones": "Proceso completado satisfactoriamente"
+    "estado": true
 }
 ```
 
 **Respuesta:**
 ```json
 {
-    "message": "Proceso actualizado exitosamente"
+    "success": true,
+    "message": "Proceso actualizado exitosamente",
+    "data": {
+        "_id": "67872bc0a3c92668a1055548",
+        "company": "677d27370ed9325d9e4a33c7",
+        "sucursal": "6786aa52abdf96d3b6322316",
+        "fecInicio": "2024-03-20T09:00:00.000Z",
+        "fecFinal": "2024-03-21T17:00:00.000Z",
+        "estadoOperacion": true,
+        "currentStage": "doblado",
+        "nextStage": "planchado",
+        "procesos": [
+            {
+                "tipo": "Lavado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "09:30",
+                "responsable": "675b7a703c2e8e6476da2aea",
+                "detalles": [
+                    {
+                        "numOrden": "LAV-002",
+                        "maquina": "675c8b92d4f3e789a0bc1234",
+                        "cantPrendas": 75,
+                        "etiqueta": "Ropa oscura",
+                        "observaciones": "Temperatura media"
+                    }
+                ],
+                "estado": true,
+                "_id": "67872bc0a3c92668a1055549",
+                "createdAt": "2025-01-15T03:30:08.738Z",
+                "updatedAt": "2025-01-15T05:18:36.958Z"
+            },
+            {
+                "tipo": "Secado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "11:30",
+                "responsable": "675b7a703c2e8e6476da2aeb",
+                "detalles": [
+                    {
+                        "numOrden": "SEC-002",
+                        "maquina": "675c8b92d4f3e789a0bc5678",
+                        "cantPrendas": 75,
+                        "etiqueta": "Ropa oscura",
+                        "observaciones": "Secado normal"
+                    }
+                ],
+                "estado": true,
+                "_id": "67872bc0a3c92668a105554a",
+                "createdAt": "2025-01-15T03:30:08.740Z",
+                "updatedAt": "2025-01-15T05:20:45.577Z"
+            },
+            {
+                "tipo": "Doblado",
+                "fecha": "2024-03-20T00:00:00.000Z",
+                "hora": "14:30",
+                "responsable": "675b7a703c2e8e6476da2aea",
+                "detalles": [
+                    {
+                        "numOrden": "SEC-001",
+                        "maquina": "675c8b92d4f3e789a0bc5678",
+                        "cantPrendas": 50,
+                        "etiqueta": "Ropa Oscura",
+                        "observaciones": "Nuevo Proceso de Doblado agregado"
+                    }
+                ],
+                "estado": false,
+                "_id": "678741250aeac7616747d0c3",
+                "createdAt": "2025-01-15T05:01:25.733Z",
+                "updatedAt": "2025-01-15T05:01:25.733Z"
+            }
+        ],
+        "createdAt": "2025-01-15T03:30:08.742Z",
+        "updatedAt": "2025-01-15T05:20:45.577Z",
+        "__v": 1
+    }
 }
 ```
 

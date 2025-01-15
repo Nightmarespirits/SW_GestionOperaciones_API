@@ -1,13 +1,13 @@
 import express from "express";
 import { getAllCompanies, getCompanyById, updateCompany, deleteCompany, changeCompanyPassword, validateCompanyPassword } from "../controller/companyController.js";
-import authMiddleware from "../../middleware/planMiddleware.js";
+import authMiddleware from "../../middleware/authMiddleware.js";
 import planMiddleware from "../../middleware/planMiddleware.js";
 
-const router = express.Router({mergeParams: true});
+const router = express.Router();
 
 router.use(authMiddleware);
 
-router.get('/', planMiddleware(['root']), getAllCompanies)
+router.get('/', planMiddleware(['root','premium', 'basic']), getAllCompanies);
 router.post('/:companyId/validate-password', planMiddleware(['root','premium', 'basic']), validateCompanyPassword)
 router.post('/:companyId/change-password', planMiddleware(['root','premium', 'basic']), changeCompanyPassword )
 router.get('/:id', planMiddleware(['root','premium', 'basic']), getCompanyById);

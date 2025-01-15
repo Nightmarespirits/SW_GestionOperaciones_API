@@ -3,7 +3,8 @@ import OperacionService from '../services/OperacionService.js';
 class OperacionController {
     async createOperacion(req, res) {
         try {
-            const operacion = await OperacionService.createOperacion(req.body);
+            const { companyId, sucursalId } = req.params;
+            const operacion = await OperacionService.createOperacion(req.body, companyId, sucursalId);
             res.status(201).json({
                 success: true,
                 message: 'Operación creada exitosamente',
@@ -19,13 +20,14 @@ class OperacionController {
 
     async getOperacionById(req, res) {
         try {
-            const operacion = await OperacionService.getOperacionById(req.params.id);
+            const { companyId, sucursalId, id } = req.params;
+            const operacion = await OperacionService.getOperacionById(companyId, sucursalId, id);
             res.status(200).json({
                 success: true,
                 data: operacion
             });
         } catch (error) {
-            res.status(404).json({
+            res.status(400).json({
                 success: false,
                 message: error.message
             });
@@ -34,36 +36,15 @@ class OperacionController {
 
     async getAllOperaciones(req, res) {
         try {
-            const { 
-                page = 1, 
-                limit = 10, 
-                company, 
-                sucursal, 
-                currentStage,
-                estadoOperacion 
-            } = req.query;
-
-            // Construir filtro de búsqueda
-            const query = {};
-            if (company) query.company = company;
-            if (sucursal) query.sucursal = sucursal;
-            if (currentStage) query.currentStage = currentStage;
-            if (estadoOperacion !== undefined) {
-                query.estadoOperacion = estadoOperacion === 'true';
-            }
-
-            const operaciones = await OperacionService.getAllOperaciones(
-                query, 
-                parseInt(page), 
-                parseInt(limit)
-            );
-
+            const { companyId, sucursalId } = req.params;
+            const { page, limit, ...query } = req.query;
+            const operaciones = await OperacionService.getAllOperaciones(companyId, sucursalId, query, page, limit);
             res.status(200).json({
                 success: true,
-                ...operaciones
+                data: operaciones
             });
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: error.message
             });
@@ -72,10 +53,8 @@ class OperacionController {
 
     async updateOperacion(req, res) {
         try {
-            const operacion = await OperacionService.updateOperacion(
-                req.params.id, 
-                req.body
-            );
+            const { companyId, sucursalId, id } = req.params;
+            const operacion = await OperacionService.updateOperacion(companyId, sucursalId, id, req.body);
             res.status(200).json({
                 success: true,
                 message: 'Operación actualizada exitosamente',
@@ -91,10 +70,12 @@ class OperacionController {
 
     async deleteOperacion(req, res) {
         try {
-            await OperacionService.deleteOperacion(req.params.id);
+            const { companyId, sucursalId, id } = req.params;
+            const operacion = await OperacionService.deleteOperacion(companyId, sucursalId, id);
             res.status(200).json({
                 success: true,
-                message: 'Operación eliminada exitosamente'
+                message: 'Operación eliminada exitosamente',
+                data: operacion
             });
         } catch (error) {
             res.status(400).json({
@@ -104,16 +85,14 @@ class OperacionController {
         }
     }
 
-    async addProceso(req, res) {
+    async addProcesoToOperacion(req, res) {
         try {
-            const operacion = await OperacionService.addProcesoToOperacion(
-                req.params.id, 
-                req.body
-            );
-            res.status(200).json({
+            const { companyId, sucursalId, operacionId } = req.params;
+            const proceso = await OperacionService.addProcesoToOperacion(companyId, sucursalId, operacionId, req.body);
+            res.status(201).json({
                 success: true,
                 message: 'Proceso agregado exitosamente',
-                data: operacion
+                data: proceso
             });
         } catch (error) {
             res.status(400).json({
@@ -125,11 +104,8 @@ class OperacionController {
 
     async updateCurrentStage(req, res) {
         try {
-            const { newStage } = req.body;
-            const operacion = await OperacionService.updateCurrentStage(
-                req.params.id, 
-                newStage
-            );
+            const { companyId, sucursalId, id } = req.params;
+            const operacion = await OperacionService.updateCurrentStage(companyId, sucursalId, id, req.body.currentStage);
             res.status(200).json({
                 success: true,
                 message: 'Etapa actualizada exitosamente',
@@ -145,17 +121,12 @@ class OperacionController {
 
     async updateProceso(req, res) {
         try {
-            const { operacionId, procesoId } = req.params;
-            const operacion = await OperacionService.updateProceso(
-                operacionId,
-                procesoId,
-                req.body
-            );
-            
+            const { companyId, sucursalId, operacionId, procesoId } = req.params;
+            const proceso = await OperacionService.updateProceso(companyId, sucursalId, operacionId, procesoId, req.body);
             res.status(200).json({
                 success: true,
                 message: 'Proceso actualizado exitosamente',
-                data: operacion
+                data: proceso
             });
         } catch (error) {
             res.status(400).json({
@@ -167,7 +138,8 @@ class OperacionController {
 
     async getProcesosByFilters(req, res) {
         try {
-            const procesos = await OperacionService.getProcesosByFilters(req.query);
+            const { companyId, sucursalId } = req.params;
+            const procesos = await OperacionService.getProcesosByFilters(companyId, sucursalId, req.query);
             res.status(200).json({
                 success: true,
                 data: procesos
@@ -182,8 +154,8 @@ class OperacionController {
 
     async filterProcesosByNumOrden(req, res) {
         try {
-            const { numOrden } = req.query;
-            const procesos = await OperacionService.filterProcesosByNumOrden(numOrden);
+            const { companyId, sucursalId } = req.params;
+            const procesos = await OperacionService.filterProcesosByNumOrden(companyId, sucursalId, req.query.numOrden);
             res.status(200).json({
                 success: true,
                 data: procesos

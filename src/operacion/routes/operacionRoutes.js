@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import OperacionController from '../controller/OperacionController.js';
-// import authMiddleware from '../../auth/middleware/authMiddleware.js';
+import OperacionController from '../controllers/OperacionController.js';
 import validationMiddleware from '../../middleware/validationMiddleware.js';
 import { 
     createOperacionValidation,
@@ -9,10 +8,7 @@ import {
     updateProcesoValidation
 } from '../validations/operacionValidation.js';
 
-const router = Router();
-
-// Rutas protegidas por middleware de autenticación
-// router.use(authMiddleware);
+const router = Router({ mergeParams: true });
 
 // Crear nueva operación
 router.post(
@@ -29,20 +25,20 @@ router.get(
 
 // Obtener operación por ID
 router.get(
-    '/:id', 
+    '/:sucursalId/:id', 
     OperacionController.getOperacionById
 );
 
 // Actualizar operación
 router.put(
-    '/:id', 
+    '/:sucursalId/:id', 
     validationMiddleware(updateOperacionValidation),
     OperacionController.updateOperacion
 );
 
 // Eliminar operación
 router.delete(
-    '/:id', 
+    '/:sucursalId/:id', 
     OperacionController.deleteOperacion
 );
 
@@ -50,29 +46,31 @@ router.delete(
 router.post(
     '/:sucursalId/:operacionId/procesos', 
     validationMiddleware(addProcesoValidation),
-    OperacionController.addProceso
+    OperacionController.addProcesoToOperacion
 );
 
 // Actualizar etapa actual de la operación
 router.patch(
-    '/:id/stage', 
+    '/:sucursalId/:id/stage', 
     OperacionController.updateCurrentStage
 );
 
-// Nuevas rutas
+//Actualizar Proceso (Notese la diferencia con el endpoint de actualizar operacion que es mas generico)
 router.patch(
-    '/:operacionId/procesos/:procesoId',
+    '/:sucursalId/:operacionId/procesos/:procesoId',
     validationMiddleware(updateProcesoValidation),
     OperacionController.updateProceso
 );
 
+//Obtener Procesos por filtros
 router.get(
-    '/procesos/filter',
+    '/:sucursalId/procesos/filter',
     OperacionController.getProcesosByFilters
 );
 
+//Obtener Procesos por numero de orden
 router.get(
-    '/procesos/by-orden',
+    '/:sucursalId/procesos/by-orden',
     OperacionController.filterProcesosByNumOrden
 );
 

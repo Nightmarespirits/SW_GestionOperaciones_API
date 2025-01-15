@@ -1,18 +1,26 @@
 import Operacion from '../model/OperacionModel.js';
 
 class OperacionService {
-    async createOperacion(operacionData) {
+    async createOperacion(operacionData, companyId, sucursalId) {
         try {
-            const operacion = new Operacion(operacionData);
+            const operacion = new Operacion({
+                company: companyId,
+                sucursal: sucursalId,
+                ...operacionData,
+            });
             return await operacion.save();
         } catch (error) {
             throw new Error(`Error creando operación: ${error.message}`);
         }
     }
 
-    async getOperacionById(id) {
+    async getOperacionById(companyId, sucursalId, id) {
         try {
-            const operacion = await Operacion.findById(id)
+            const operacion = await Operacion.findOne({
+                _id: id,
+                company: companyId,
+                sucursal: sucursalId
+            })
                 .populate('company')
                 .populate('sucursal')
                 .populate({
@@ -34,28 +42,33 @@ class OperacionService {
         }
     }
 
-    async getAllOperaciones(query = {}, page = 1, limit = 10) {
+    async getAllOperaciones(companyId, sucursalId, query = {}, page = 1, limit = 10) {
         try {
-            const options = {
-                page,
-                limit,
-                populate: [
-                    { path: 'company', select: 'nombre' },
-                    { path: 'sucursal', select: 'nombre' }
-                ],
-                sort: { createdAt: -1 }
-            };
+            const filter = { company: companyId, sucursal: sucursalId, ...query };
+            const operaciones = await Operacion.find(filter)
+                .populate('company', 'nombre')
+                .populate('sucursal', 'nombre')
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * limit)
+                .limit(limit);
 
-            return await Operacion.paginate(query, options);
+            const total = await Operacion.countDocuments(filter);
+
+            return {
+                operaciones,
+                total,
+                page,
+                limit
+            };
         } catch (error) {
             throw new Error(`Error listando operaciones: ${error.message}`);
         }
     }
 
-    async updateOperacion(id, updateData) {
+    async updateOperacion(companyId, sucursalId, id, updateData) {
         try {
-            const operacion = await Operacion.findByIdAndUpdate(
-                id, 
+            const operacion = await Operacion.findOneAndUpdate(
+                { _id: id, company: companyId, sucursal: sucursalId },
                 updateData, 
                 { 
                     new: true, 
@@ -73,9 +86,13 @@ class OperacionService {
         }
     }
 
-    async deleteOperacion(id) {
+    async deleteOperacion(companyId, sucursalId, id) {
         try {
-            const operacion = await Operacion.findByIdAndDelete(id);
+            const operacion = await Operacion.findOneAndDelete({
+                _id: id,
+                company: companyId,
+                sucursal: sucursalId
+            });
 
             if (!operacion) {
                 throw new Error('Operación no encontrada');
@@ -87,9 +104,13 @@ class OperacionService {
         }
     }
 
-    async addProcesoToOperacion(operacionId, procesoData) {
+    async addProcesoToOperacion(companyId, sucursalId, operacionId, procesoData) {
         try {
-            const operacion = await Operacion.findById(operacionId);
+            const operacion = await Operacion.findOne({
+                _id: operacionId,
+                company: companyId,
+                sucursal: sucursalId
+            });
 
             if (!operacion) {
                 throw new Error('Operación no encontrada');
@@ -102,10 +123,10 @@ class OperacionService {
         }
     }
 
-    async updateCurrentStage(operacionId, newStage) {
+    async updateCurrentStage(companyId, sucursalId, operacionId, newStage) {
         try {
-            const operacion = await Operacion.findByIdAndUpdate(
-                operacionId, 
+            const operacion = await Operacion.findOneAndUpdate(
+                { _id: operacionId, company: companyId, sucursal: sucursalId },
                 { currentStage: newStage },
                 { new: true }
             );
@@ -120,15 +141,24 @@ class OperacionService {
         }
     }
 
-    async updateProceso(operacionId, procesoId, updateData) {
+    async updateProceso(companyId, sucursalId, operacionId, procesoId, updateData) {
         try {
             const operacion = await Operacion.findOneAndUpdate(
                 { 
                     _id: operacionId,
+                    company: companyId,
+                    sucursal: sucursalId,
                     'procesos._id': procesoId 
                 },
                 { 
-                    $set: { 'procesos.$': { ...updateData, _id: procesoId } }
+                    $set: { 
+                        'procesos.$.responsable': updateData.responsable,
+                        'procesos.$.detalles': updateData.detalles,
+                        'procesos.$.estado': updateData.estado,
+                        'procesos.$.tipo': updateData.tipo,
+                        'procesos.$.fechaInicio': updateData.fechaInicio,
+                        'procesos.$.fechaFin': updateData.fechaFin
+                    }
                 },
                 { new: true, runValidators: true }
             );
@@ -143,16 +173,32 @@ class OperacionService {
         }
     }
 
-    async getProcesosByFilters(query = {}) {
+    async getProcesosByFilters(companyId, sucursalId, query = {}) {
         try {
-            const { responsable, estado, tipo } = query;
-            const matchQuery = {};
-            
+            const { responsable, estado, tipo, fechaInicio, fechaFin, fecha } = query;
+            const matchQuery = { company: companyId, sucursal: sucursalId };
+
+            // Add filters based on query parameters
             if (responsable) matchQuery['procesos.responsable'] = responsable;
             if (estado !== undefined) matchQuery['procesos.estado'] = estado === 'true';
             if (tipo) matchQuery['procesos.tipo'] = tipo;
 
+            // Handle date filtering
+            if (fecha) {
+                const date = new Date(fecha);
+                matchQuery['procesos.fecha'] = {
+                    $gte: new Date(date.setHours(0, 0, 0, 0)),
+                    $lt: new Date(date.setHours(23, 59, 59, 999))
+                };
+            } else if (fechaInicio && fechaFin) {
+                matchQuery['procesos.fecha'] = {
+                    $gte: new Date(fechaInicio),
+                    $lt: new Date(fechaFin)
+                };
+            }
+
             const operaciones = await Operacion.aggregate([
+                { $match: matchQuery },
                 { $unwind: '$procesos' },
                 { $match: matchQuery },
                 { $replaceRoot: { newRoot: '$procesos' } }
@@ -164,9 +210,10 @@ class OperacionService {
         }
     }
 
-    async filterProcesosByNumOrden(numOrden) {
+    async filterProcesosByNumOrden(companyId, sucursalId, numOrden) {
         try {
             const operaciones = await Operacion.aggregate([
+                { $match: { company: companyId, sucursal: sucursalId } },
                 { $unwind: '$procesos' },
                 { $unwind: '$procesos.detalles' },
                 { $match: { 'procesos.detalles.numOrden': numOrden } },

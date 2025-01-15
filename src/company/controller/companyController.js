@@ -3,6 +3,7 @@ import CompanyModel from "../model/CompanyModel.js";
 export const getAllCompanies = async (req, res) => {
     try {
         const companies = await CompanyModel.find().select('-companyPassword')
+        console.log("companies: ", companies)
         res.json(companies)
     } catch (error) {
         res.status(500).json({message: error.message})
