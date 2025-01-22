@@ -1,4 +1,5 @@
 import Operacion from '../model/OperacionModel.js';
+import mongoose from 'mongoose';
 
 class OperacionService {
     async createOperacion(operacionData, companyId, sucursalId) {
@@ -171,49 +172,90 @@ class OperacionService {
         } catch (error) {
             throw new Error(`Error actualizando proceso: ${error.message}`);
         }
-    }
+    } 
 
-    async getProcesosByFilters(companyId, sucursalId, query = {}) {
+    async getProcesosByFilters(companyId, sucursalId, query = {}, page = 1, limit = 10) {
         try {
             const { responsable, estado, tipo, fechaInicio, fechaFin, fecha } = query;
-            const matchQuery = { company: companyId, sucursal: sucursalId };
-
-            // Add filters based on query parameters
-            if (responsable) matchQuery['procesos.responsable'] = responsable;
-            if (estado !== undefined) matchQuery['procesos.estado'] = estado === 'true';
-            if (tipo) matchQuery['procesos.tipo'] = tipo;
-
-            // Handle date filtering
-            if (fecha) {
-                const date = new Date(fecha);
-                matchQuery['procesos.fecha'] = {
-                    $gte: new Date(date.setHours(0, 0, 0, 0)),
-                    $lt: new Date(date.setHours(23, 59, 59, 999))
-                };
-            } else if (fechaInicio && fechaFin) {
-                matchQuery['procesos.fecha'] = {
-                    $gte: new Date(fechaInicio),
-                    $lt: new Date(fechaFin)
-                };
+    
+            // Validar ObjectIds de company y sucursal
+            if (!mongoose.Types.ObjectId.isValid(companyId) || !mongoose.Types.ObjectId.isValid(sucursalId)) {
+                throw new Error("IDs de compañía o sucursal no válidos");
             }
-
-            const operaciones = await Operacion.aggregate([
-                { $match: matchQuery },
-                { $unwind: '$procesos' },
-                { $match: matchQuery },
-                { $replaceRoot: { newRoot: '$procesos' } }
-            ]);
-
-            return operaciones;
+    
+            // Pipeline de agregación
+            const pipeline = [
+                // 1. Filtro inicial (documento padre)
+                { 
+                    $match: { 
+                        company: new mongoose.Types.ObjectId(companyId),
+                        sucursal: new mongoose.Types.ObjectId(sucursalId),
+                        "procesos": { $exists: true, $not: { $size: 0 } } // Asegura que haya procesos
+                    } 
+                },
+                // 2. Descomponer el array 'procesos'
+                { $unwind: "$procesos" },
+                // 3. Filtros a nivel de subdocumento (procesos individuales)
+                { 
+                    $match: { 
+                        ...(responsable && mongoose.Types.ObjectId.isValid(responsable) && { 
+                            "procesos.responsable": new mongoose.Types.ObjectId(responsable) 
+                        }),
+                        ...(estado !== undefined && { "procesos.estado": estado === 'true' }),
+                        ...(tipo && { "procesos.tipo": tipo }),
+                        // Manejo de fechas
+                        ...(fecha && { 
+                            "procesos.fecha": { 
+                                $gte: new Date(new Date(fecha).setUTCHours(0, 0, 0, 0)),
+                                $lt: new Date(new Date(fecha).setUTCHours(23, 59, 59, 999))
+                            }
+                        }),
+                        ...(fechaInicio && fechaFin && {
+                            "procesos.fecha": {
+                                $gte: new Date(fechaInicio),
+                                $lt: new Date(fechaFin)
+                            }
+                        })
+                    } 
+                },
+                // 4. Reemplazar raíz por el subdocumento 'procesos'
+                { $replaceRoot: { newRoot: "$procesos" } },
+                // 5. Ordenar por fecha de creación (createdAt en el subdocumento)
+                { $sort: { createdAt: -1 } },
+                // 6. Paginación
+                { $skip: (parseInt(page, 10) - 1) * parseInt(limit, 10) },
+                { $limit: parseInt(limit, 10) }
+            ];
+    
+            // Ejecutar agregación para obtener resultados
+            const procesos = await Operacion.aggregate(pipeline);
+    
+            // Pipeline para contar el total (omite paginación)
+            const totalPipeline = [
+                ...pipeline.slice(0, -3), // Elimina $sort, $skip, $limit
+                { $count: "total" }
+            ];
+            const totalResult = await Operacion.aggregate(totalPipeline);
+    
+            return {
+                procesos,
+                total: totalResult[0]?.total || 0,
+                page: parseInt(page, 10),
+                limit: parseInt(limit, 10),
+                message: "Procesos obtenidos exitosamente"
+            };
         } catch (error) {
-            throw new Error(`Error filtrando procesos: ${error.message}`);
+            // Log detallado para depuración (opcional)
+            console.error("Error en getProcesosByFilters:", error.message);
+            throw new Error(`Error al filtrar procesos: ${error.message}`);
         }
     }
 
     async filterProcesosByNumOrden(companyId, sucursalId, numOrden) {
         try {
             const operaciones = await Operacion.aggregate([
-                { $match: { company: companyId, sucursal: sucursalId } },
+                { $match: { company: new mongoose.Types.ObjectId(companyId),
+                    sucursal: new mongoose.Types.ObjectId(sucursalId), } },
                 { $unwind: '$procesos' },
                 { $unwind: '$procesos.detalles' },
                 { $match: { 'procesos.detalles.numOrden': numOrden } },
@@ -226,5 +268,4 @@ class OperacionService {
         }
     }
 }
-
 export default new OperacionService();

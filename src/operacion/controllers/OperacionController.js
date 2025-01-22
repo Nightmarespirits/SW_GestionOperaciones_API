@@ -139,7 +139,8 @@ class OperacionController {
     async getProcesosByFilters(req, res) {
         try {
             const { companyId, sucursalId } = req.params;
-            const procesos = await OperacionService.getProcesosByFilters(companyId, sucursalId, req.query);
+            const { page, limit, ...query } = req.query;
+            const procesos = await OperacionService.getProcesosByFilters(companyId, sucursalId, query, page, limit);
             res.status(200).json({
                 success: true,
                 data: procesos
